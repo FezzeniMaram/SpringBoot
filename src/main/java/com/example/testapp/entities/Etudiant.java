@@ -16,6 +16,7 @@ public class Etudiant {
         private Long idEtudiant;
         @Column(length = 20,nullable = true)
         private  String nomEtudiant;
+
         private  String emailEtudiant;
         private  String motPasseEtudiant;
 

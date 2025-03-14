@@ -3,9 +3,11 @@ package com.example.testapp.controller;
 import com.example.testapp.entities.Etudiant;
 import com.example.testapp.services.EtudiantInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/etudiant")
@@ -13,10 +15,10 @@ public class etudiantController {
     @Autowired
     EtudiantInterface etudiantInterface;
 
-    @PostMapping("/add")
-    public Etudiant inscrireEtudiant(@RequestBody Etudiant etudiant ){
-        return etudiantInterface.inscrireEtudiant(etudiant);
-
+    @PostMapping("/inscrire")
+    public String inscrireEtudiant(@RequestBody Etudiant etudiant) {
+        String message = etudiantInterface.inscrireEtudiant(etudiant);
+        return message;
     }
 
     @DeleteMapping("/delete/{id}")
@@ -39,7 +41,14 @@ public class etudiantController {
     }
 
 
+    @PostMapping("/authentification")
+    public ResponseEntity<String> login(@RequestBody Map<String, String> requestBody) {
+        String emailEtudiant = requestBody.get("emailEtudiant");
+        String motPasseEtudiant = requestBody.get("motPasseEtudiant");
 
+        String response = etudiantInterface.Authen(emailEtudiant, motPasseEtudiant);
+        return ResponseEntity.ok(response);
+    }
 
 
 
