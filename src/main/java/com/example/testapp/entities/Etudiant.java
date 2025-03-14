@@ -10,13 +10,11 @@ import java.util.List;
 @Table(name = "etudiant")
 public class Etudiant {
 
-
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long idEtudiant;
         @Column(length = 20,nullable = true)
         private  String nomEtudiant;
-
         private  String emailEtudiant;
         private  String motPasseEtudiant;
 

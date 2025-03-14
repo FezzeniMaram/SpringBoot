@@ -27,7 +27,6 @@ public class Tuteur {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idTuteur;
-    @Column(length = 10,nullable = true)
     private  String nomTuteur;
     private  String emailTuteur;
     private  String motPasseTuteur;

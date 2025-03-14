@@ -10,6 +10,6 @@ public interface EtudiantInterface {
     public List<Etudiant>getAllEtudiants();
     public Etudiant getEtudiantById(Long id);
     public  Etudiant updateEtudiant(Long id, Etudiant etudiant);
-    public String Authen(String emailEtudiant, String motPasseEtudiant);
+    public String authenEtudiant(String emailEtudiant, String motPasseEtudiant);
 
 }

@@ -46,7 +46,7 @@ public class etudiantController {
         String emailEtudiant = requestBody.get("emailEtudiant");
         String motPasseEtudiant = requestBody.get("motPasseEtudiant");
 
-        String response = etudiantInterface.Authen(emailEtudiant, motPasseEtudiant);
+        String response = etudiantInterface.authenEtudiant(emailEtudiant, motPasseEtudiant);
         return ResponseEntity.ok(response);
     }
 

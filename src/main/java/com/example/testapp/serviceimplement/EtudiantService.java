@@ -50,7 +50,7 @@ public class EtudiantService implements EtudiantInterface {
     }
 
     @Override
-    public String Authen(String emailEtudiant, String motPasseEtudiant) {
+    public String authenEtudiant(String emailEtudiant, String motPasseEtudiant) {
         Optional<Etudiant> etudiantOptional = etudiantRepository.findByEmailEtudiant(emailEtudiant);
         if (etudiantOptional.isPresent()){
             Etudiant etudiant = etudiantOptional.get();
