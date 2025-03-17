@@ -5,7 +5,7 @@ import com.example.testapp.entities.Video;
 import java.util.List;
 
 public interface VideoInterface {
-    public String addVideo(Video video);
+    public Video addVideo(Video video);
     public void deleteVideo(Long id);
     public Video getVideoById(Long id);
     public List<Video> getAllVideo();
