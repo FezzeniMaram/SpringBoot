@@ -7,7 +7,8 @@ public interface ChapitreIntreface {
     public Chapitre addChapitre(Chapitre chapitre);
     public void deletChapitre(Long id);
     public List<Chapitre> getAllChapitre();
-    public Chapitre getChapitreById(Long id);
+
     public Chapitre updateChapitre(Long id, Chapitre chapitre);
+    public Chapitre getChapirteById(Long id);
 
 }

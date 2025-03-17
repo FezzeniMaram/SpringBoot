@@ -1,7 +1,9 @@
 package com.example.testapp.serviceimplement;
 
 import com.example.testapp.entities.Cours;
+import com.example.testapp.entities.Tuteur;
 import com.example.testapp.repository.CoursRepository;
+import com.example.testapp.repository.TuteurRepository;
 import com.example.testapp.services.CoursInterface;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,8 @@ import java.util.List;
 public class CoursService implements CoursInterface {
     @Autowired
     CoursRepository coursRepository;
+    @Autowired
+    TuteurRepository tuteurRepository;
     @Override
     public Cours addCours(Cours cours) {
         return coursRepository.save(cours);
@@ -39,5 +43,17 @@ public class CoursService implements CoursInterface {
         cours1.setDescriptionCours(cours.getDescriptionCours());
         cours1.setMontantCours(cours.getMontantCours());
         return coursRepository.save(cours1);
+    }
+
+    @Override
+    public List<Cours> getCoursByTuteur(Long tuteurId) {
+        Tuteur tuteur = tuteurRepository.findById(tuteurId).orElseThrow(() -> new RuntimeException("Tuteur non trouvé avec l'ID : " + tuteurId));
+
+        return coursRepository.findByTuteur(tuteur);
+    }
+
+    @Override
+    public Cours getCoursById(Long coursId) {
+        return coursRepository.findById(coursId).orElse(null);
     }
 }

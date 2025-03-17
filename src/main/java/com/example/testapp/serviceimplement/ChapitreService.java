@@ -25,11 +25,6 @@ public class ChapitreService implements ChapitreIntreface {
         return chapitreRepository.findAll();
     }
 
-    @Override
-    public Chapitre getChapitreById(Long id) {
-        return chapitreRepository.findById(id).orElse(null);
-    }
-
 
     @Override
     public Chapitre updateChapitre(Long id, Chapitre chapitre) {
@@ -39,4 +34,10 @@ public class ChapitreService implements ChapitreIntreface {
         chapitre1.setContenuChapitre(chapitre.getContenuChapitre());
         return chapitreRepository.save(chapitre1);
     }
+
+    @Override
+    public Chapitre getChapirteById(Long id) {
+        return chapitreRepository.findById(id).orElse(null);
+    }
+
 }

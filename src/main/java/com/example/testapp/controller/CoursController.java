@@ -30,11 +30,12 @@ public class CoursController {
 
 
             Tuteur user = tuteurInterface.getTuteurById(userId);
-            List< Chapitre > chapters = new ArrayList<Chapitre>();
-            List<Etudiant> students = new ArrayList<Etudiant>();
+            List< Chapitre > chapiters = new ArrayList<Chapitre>();
+            List<Etudiant> etudiants = new ArrayList<Etudiant>();
             Cours cours;
-            cours = new Cours(requestData.get("titreCours").toString(), requestData.get("descriptionCours").toString(),
-                    Float.parseFloat(requestData.get("montantCours").toString()),user,chapters, students);
+            cours = new Cours(requestData.get("titreCours").toString(),
+                    requestData.get("descriptionCours").toString(),
+                    Float.parseFloat(requestData.get("montantCours").toString()),user,chapiters, etudiants);
 
             return coursInterface.addCours(cours);
         } catch (Exception e) {
@@ -62,5 +63,9 @@ public class CoursController {
     @PatchMapping("/update/{id}")
     public Cours updateCours(@PathVariable Long id, @RequestBody Cours cours){
         return coursInterface.updateCours(id, cours);
+    }
+    @GetMapping("/tuteur/{tuteurId}")
+    public List<Cours> getCoursByTuteur(@PathVariable Long tuteurId) {
+        return coursInterface.getCoursByTuteur(tuteurId);
     }
 }

@@ -14,6 +14,31 @@ public class Chapitre {
     private String typeChapitre;
     private String contenuChapitre;
 
+
+    public Chapitre(Long idChapitre, String titreChapitre, String typeChapitre, String contenuChapitre, Cours cours, Video video) {
+        this.idChapitre = idChapitre;
+        this.titreChapitre = titreChapitre;
+        this.typeChapitre = typeChapitre;
+        this.contenuChapitre = contenuChapitre;
+        this.cours = cours;
+        this.video = video;
+    }
+
+    public Chapitre(){
+
+    }
+    @Override
+    public String toString() {
+        return "Chapitre{" +
+                "idChapitre=" + idChapitre +
+                ", titreChapitre='" + titreChapitre + '\'' +
+                ", typeChapitre='" + typeChapitre + '\'' +
+                ", contenuChapitre='" + contenuChapitre + '\'' +
+                ", cours=" + cours +
+                ", video=" + video +
+                '}';
+    }
+
     public Long getIdChapitre() {
         return idChapitre;
     }

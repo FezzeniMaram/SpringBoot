@@ -10,5 +10,7 @@ public interface CoursInterface {
     public List<Cours> getAllCours();
     public Cours getById(Long id);
     public Cours updateCours(Long id, Cours cours);
+    public List<Cours> getCoursByTuteur(Long tuteurId);
 
+    Cours getCoursById(Long coursId);
 }
