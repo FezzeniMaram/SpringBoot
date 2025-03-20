@@ -12,6 +12,26 @@ public class Avis {
     private Long idAvis;
     private String commentaireAvis;
 
+    public Avis(Long idAvis, String commentaireAvis, Etudiant etudiant, Cours cours) {
+        this.idAvis = idAvis;
+        this.commentaireAvis = commentaireAvis;
+        this.etudiant = etudiant;
+        this.cours = cours;
+    }
+    public Avis(){
+
+    }
+
+    @Override
+    public String toString() {
+        return "Avis{" +
+                "idAvis=" + idAvis +
+                ", commentaireAvis='" + commentaireAvis + '\'' +
+                ", etudiant=" + etudiant +
+                ", cours=" + cours +
+                '}';
+    }
+
     public Long getIdAvis() {
         return idAvis;
     }
@@ -28,7 +48,7 @@ public class Avis {
         return cours;
     }
 
-    public void setIdAvis(Long idAvis) {
+    public void getIdAvis(Long idAvis) {
         this.idAvis = idAvis;
     }
 

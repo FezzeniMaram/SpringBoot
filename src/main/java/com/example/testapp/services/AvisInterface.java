@@ -10,5 +10,6 @@ public interface AvisInterface {
     public List<Avis> getAllAvis();
     public Avis getAvisById(Long id);
     public Avis updateAvis(Long id , Avis avis);
+     List<Avis> getAvisBycours(Long coursId);
 
 }

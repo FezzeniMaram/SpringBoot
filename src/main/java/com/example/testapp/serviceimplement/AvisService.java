@@ -38,4 +38,9 @@ public class AvisService implements AvisInterface {
         avis1.setCommentaireAvis(avis.getCommentaireAvis());
         return avisRepository.save(avis1);
     }
+
+    @Override
+    public List<Avis> getAvisBycours(Long coursId) {
+        return avisRepository.findByCours_IdCour(coursId);
+    }
 }
