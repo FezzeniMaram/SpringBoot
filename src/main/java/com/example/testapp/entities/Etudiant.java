@@ -1,5 +1,7 @@
 package com.example.testapp.entities;
 
+import com.example.testapp.serializer.EtudiantSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -8,6 +10,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "etudiant")
+@JsonSerialize( using = EtudiantSerializer.class)
 public class Etudiant {
 
         @Id

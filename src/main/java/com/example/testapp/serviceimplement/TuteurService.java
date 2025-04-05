@@ -1,5 +1,6 @@
 package com.example.testapp.serviceimplement;
 
+import com.example.testapp.entities.Cours;
 import com.example.testapp.entities.Tuteur;
 import com.example.testapp.repository.TuteurRepository;
 import com.example.testapp.services.TuteurInterface;
@@ -61,4 +62,18 @@ public class TuteurService implements TuteurInterface {
         return "Utilisateur n'existe pas";
 
     }
+
+    @Override
+    public Object getCoursPubliesByTuteur(Long tuteurId) {
+        Tuteur tuteur = tuteurRepository.findById(tuteurId).orElse(null);
+        if (tuteur != null) {
+            List<Cours> coursPublies = tuteur.getCoursPublies();
+            if (coursPublies.isEmpty()) {
+                return "Tu n'as aucun cours publié.";
+            }
+            return coursPublies;
+        }
+        return "Tuteur non trouvé";
+    }
+
 }

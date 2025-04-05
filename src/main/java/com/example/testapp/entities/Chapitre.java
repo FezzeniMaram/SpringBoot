@@ -1,11 +1,15 @@
 package com.example.testapp.entities;
 
+import com.example.testapp.serializer.ChapitreSerializer;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
 @Data
 @Table(name="Chapitre")
+@JsonSerialize(using = ChapitreSerializer.class)
 public class Chapitre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY )

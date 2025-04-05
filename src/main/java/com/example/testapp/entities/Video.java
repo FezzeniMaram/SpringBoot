@@ -1,11 +1,15 @@
 package com.example.testapp.entities;
 
+import com.example.testapp.serializer.VideoSerializer;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
 @Data
 @Table(name = "Video")
+@JsonSerialize(using = VideoSerializer.class)
 public class Video {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

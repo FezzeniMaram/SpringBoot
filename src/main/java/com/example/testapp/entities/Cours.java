@@ -1,5 +1,8 @@
 package com.example.testapp.entities;
 
+import com.example.testapp.serializer.CoursSerializer;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -8,6 +11,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "Cours")
+@JsonSerialize(using = CoursSerializer.class)
 public class Cours {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -48,4 +48,15 @@ public class TuteurController {
     public Tuteur getTuteurById(@PathVariable  Long id){
         return tuteurInterface.getTuteurById(id);
     }
+
+    @GetMapping("/coursPublier/{idTuteur}")
+    public ResponseEntity<?> getCoursPublies(@PathVariable Long idTuteur) {
+        Object response = tuteurInterface.getCoursPubliesByTuteur(idTuteur);
+
+        if (response instanceof String) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.ok(response);
+        }
+    }
 }

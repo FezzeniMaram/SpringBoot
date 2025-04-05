@@ -1,5 +1,8 @@
 package com.example.testapp.entities;
 
+import com.example.testapp.serializer.TuteurSerializer;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -8,10 +11,9 @@ import lombok.Setter;
 import java.util.List;
 
 @Entity
-//@Getter
-//@Setter
 @Data
 @Table(name = "Tuteur")
+@JsonSerialize(using = TuteurSerializer.class)
 public class Tuteur {
     @Override
     public String toString() {
