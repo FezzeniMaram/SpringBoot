@@ -12,6 +12,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/tuteur")
+@CrossOrigin(origins = "http://localhost:4200")
 public class TuteurController {
     @Autowired
     TuteurInterface tuteurInterface;

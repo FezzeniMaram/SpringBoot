@@ -2,11 +2,13 @@ package com.example.testapp.services;
 
 import com.example.testapp.entities.Cours;
 import com.example.testapp.entities.Etudiant;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Map;
 
 public interface EtudiantInterface {
-    public String  inscrireEtudiant(Etudiant etudiant);
+    ResponseEntity<Map<String, String>> inscrireEtudiant(Etudiant etudiant);
     void deleteEtudiant (Long id);
     public List<Etudiant>getAllEtudiants();
     public Etudiant getEtudiantById(Long id);

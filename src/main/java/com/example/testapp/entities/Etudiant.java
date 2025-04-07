@@ -20,6 +20,8 @@ public class Etudiant {
         private  String nomEtudiant;
         private  String emailEtudiant;
         private  String motPasseEtudiant;
+        private Role role = Role.ETUDIANT;
+
 
         public Long getIdEtudiant() {
                 return idEtudiant;
@@ -71,6 +73,14 @@ public class Etudiant {
 
         public void setCoursInscrits(List<Cours> coursInscrits) {
                 this.coursInscrits = coursInscrits;
+        }
+
+        public Role getRole() {
+                return role;
+        }
+
+        public void setRole(Role role) {
+                this.role = role;
         }
 
         public List<Cours> getCoursInscrits() {

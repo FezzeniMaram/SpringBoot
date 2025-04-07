@@ -7,9 +7,11 @@ import com.example.testapp.repository.EtudiantRepository;
 import com.example.testapp.services.EtudiantInterface;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -21,14 +23,16 @@ public class EtudiantService implements EtudiantInterface {
     @Autowired
     CoursRepository coursRepository;
 
+
     @Override
-    public String inscrireEtudiant(Etudiant etudiant) {
+    public ResponseEntity<Map<String, String>> inscrireEtudiant(Etudiant etudiant) {
         if (etudiantRepository.existsByEmailEtudiant(etudiant.getEmailEtudiant())) {
-            return "L'utilisateur avec cet email existe déjà.";
+            return ResponseEntity.badRequest().body(Map.of("message", "L'utilisateur avec cet email existe déjà."));
         } else {
             etudiantRepository.save(etudiant);
-            return "L'étudiant a été inscrit avec succès.";
+            return ResponseEntity.ok(Map.of("message", "L'étudiant a été inscrit avec succès."));
         }
+
     }
 
     @Override

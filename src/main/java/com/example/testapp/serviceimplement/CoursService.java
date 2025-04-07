@@ -5,6 +5,7 @@ import com.example.testapp.entities.Tuteur;
 import com.example.testapp.repository.CoursRepository;
 import com.example.testapp.repository.TuteurRepository;
 import com.example.testapp.services.CoursInterface;
+import jakarta.annotation.security.PermitAll;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class CoursService implements CoursInterface {
     public void deleteCours(Long id) {
         coursRepository.deleteById(id);
     }
-
+    @PermitAll
     @Override
     public List<Cours> getAllCours() {
         return coursRepository.findAll();
@@ -38,6 +39,7 @@ public class CoursService implements CoursInterface {
 
     @Override
     public Cours updateCours(Long id, Cours cours) {
+
         Cours cours1 = coursRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Cours avec l'ID " + id + " non trouvé"));
         cours1.setTitreCours(cours.getTitreCours());
         cours1.setDescriptionCours(cours.getDescriptionCours());

@@ -12,16 +12,15 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/etudiant")
+@CrossOrigin(origins = "http://localhost:4200")
 public class EtudiantController {
 
     @Autowired
     EtudiantInterface etudiantInterface;
 
     @PostMapping("/inscrire")
-    public String inscrireEtudiant(@RequestBody Etudiant etudiant) {
-        // Inscription de l'étudiant
-        String message = etudiantInterface.inscrireEtudiant(etudiant);
-        return message;
+    public ResponseEntity<Map<String, String>> inscrireEtudiant(@RequestBody Etudiant etudiant) {
+        return etudiantInterface.inscrireEtudiant(etudiant);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -72,4 +71,8 @@ public class EtudiantController {
         return ResponseEntity.ok(coursList);
     }
 
+    @GetMapping("/test")
+    public String testToken() {
+        return "Accès autorisé pour l'étudiant !";
+    }
 }

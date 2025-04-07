@@ -15,6 +15,16 @@ import java.util.List;
 @Table(name = "Tuteur")
 @JsonSerialize(using = TuteurSerializer.class)
 public class Tuteur {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long idTuteur;
+    private  String nomTuteur;
+    private  String emailTuteur;
+    private  String motPasseTuteur;
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.TUTEUR;
+
     @Override
     public String toString() {
         return "Tuteur{" +
@@ -25,14 +35,6 @@ public class Tuteur {
                 ", coursPublies=" + coursPublies +
                 '}';
     }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idTuteur;
-    private  String nomTuteur;
-    private  String emailTuteur;
-    private  String motPasseTuteur;
-
     public Long getIdTuteur() {
         return idTuteur;
     }
@@ -71,6 +73,14 @@ public class Tuteur {
 
     public void setCoursPublies(List<Cours> coursPublies) {
         this.coursPublies = coursPublies;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     @OneToMany(mappedBy = "tuteur", cascade = CascadeType.ALL)
