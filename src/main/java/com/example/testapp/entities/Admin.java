@@ -9,12 +9,13 @@ public class Admin {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String EmailAdmin;
+    private String email; // ✅ Standardisé
     private String password;
 
     @Enumerated(EnumType.STRING)
     private Role role = Role.ADMIN;
 
+    // Getters et setters
     public Long getId() {
         return id;
     }
@@ -23,12 +24,12 @@ public class Admin {
         this.id = id;
     }
 
-    public String getEmailAdmin() {
-        return EmailAdmin;
+    public String getEmail() {
+        return email;
     }
 
-    public void setEmailAdmin(String emailAdmin) {
-        EmailAdmin = emailAdmin;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {

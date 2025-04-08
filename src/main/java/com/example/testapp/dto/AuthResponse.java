@@ -1,12 +1,32 @@
 package com.example.testapp.dto;
 
 public class AuthResponse {
+    private boolean success;
+    private String message;
     private String token;
     private String role;
 
-    public AuthResponse(String token, String role) {
+    public AuthResponse(boolean success, String message, String token, String role) {
+        this.success = success;
+        this.message = message;
         this.token = token;
         this.role = role;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public String getToken() {
