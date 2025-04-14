@@ -1,71 +1,166 @@
 package com.example.testapp.controller;
 
-import com.example.testapp.entities.Chapitre;
+import com.example.testapp.dto.ApiResponse;
 import com.example.testapp.entities.Cours;
-import com.example.testapp.entities.Etudiant;
 import com.example.testapp.entities.Tuteur;
 import com.example.testapp.services.CoursInterface;
 import com.example.testapp.services.TuteurInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
+import java.nio.file.*;
+import java.util.*;
 
 @RestController
-@RequestMapping("cours")
+@RequestMapping("/cours")
 public class CoursController {
-    @Autowired
-    CoursInterface coursInterface;
-    @Autowired
-    TuteurInterface tuteurInterface;
 
+    private static final String UPLOAD_DIR = "uploads/images";
 
+    @Autowired
+    private CoursInterface coursInterface;
+
+    @Autowired
+    private TuteurInterface tuteurInterface;
+
+    // ✅ Ajouter un cours → TUTEUR
     @PostMapping("/add")
-    public Cours addCours(@RequestBody Map<String, Object> requestData){
-
+    @PreAuthorize("hasAuthority('TUTEUR')")
+    public ApiResponse<Cours> addCours(
+            @RequestParam("titreCours") String titreCours,
+            @RequestParam("descriptionCours") String descriptionCours,
+            @RequestParam("tuteur_id") Long tuteurId,
+            @RequestParam("image") MultipartFile imageFile
+    ) {
         try {
-            Long userId = requestData.get("tuteur_id") != null? Long.valueOf(requestData.get("tuteur_id").toString()):null;
+            // Upload de l'image
+            String imagePath = saveImage(imageFile);
 
+            // Récupération du tuteur
+            Tuteur tuteur = tuteurInterface.getTuteurById(tuteurId);
 
-            Tuteur user = tuteurInterface.getTuteurById(userId);
-            List< Chapitre > chapiters = new ArrayList<Chapitre>();
-            List<Etudiant> etudiants = new ArrayList<Etudiant>();
-            Cours cours;
-            cours = new Cours(requestData.get("titreCours").toString(),
-                    requestData.get("descriptionCours").toString(),
-                    Float.parseFloat(requestData.get("montantCours").toString()),user,chapiters, etudiants);
+            // Création du cours
+            Cours cours = new Cours(
+                    titreCours,
+                    descriptionCours,
+                    imagePath,
+                    tuteur,
+                    new ArrayList<>(),
+                    new ArrayList<>()
+            );
 
-            return coursInterface.addCours(cours);
+            Cours savedCours = coursInterface.addCours(cours);
+            return new ApiResponse<>(true, "Cours ajouté avec succès", savedCours);
+
+        } catch (IOException e) {
+            return new ApiResponse<>(false, "Erreur lors de l'upload de l'image : " + e.getMessage(), null);
         } catch (Exception e) {
-            System.out.println(e);
-            
-            throw new RuntimeException(e);
+            return new ApiResponse<>(false, "Erreur lors de l'ajout du cours : " + e.getMessage(), null);
         }
     }
 
-    @DeleteMapping("/delete/{id}")
-    public void deleteCours(@PathVariable Long id){
-        coursInterface.deleteCours(id);
-    }
-
-    @GetMapping("/getAllCours")
-    public List<Cours> getAllCours (){
-        return coursInterface.getAllCours();
-    }
-
-    @GetMapping("/getById/{id}")
-    public Cours getById(@PathVariable Long id){
-        return coursInterface.getById(id);
-    }
-
+    // ✅ Modifier un cours → TUTEUR ou ADMIN
     @PatchMapping("/update/{id}")
-    public Cours updateCours(@PathVariable Long id, @RequestBody Cours cours){
-        return coursInterface.updateCours(id, cours);
+    @PreAuthorize("hasAnyAuthority('TUTEUR', 'ADMIN')")
+    public ApiResponse<Cours> updateCours(
+            @PathVariable Long id,
+            @RequestParam("titreCours") String titreCours,
+            @RequestParam("descriptionCours") String descriptionCours,
+            @RequestParam(value = "image", required = false) MultipartFile imageFile
+    ) {
+        try {
+            Cours existingCours = coursInterface.getById(id);
+            if (existingCours == null) {
+                return new ApiResponse<>(false, "Cours introuvable", null);
+            }
+
+            existingCours.setTitreCours(titreCours);
+            existingCours.setDescriptionCours(descriptionCours);
+
+            // Remplacer l'image si une nouvelle est fournie
+            if (imageFile != null && !imageFile.isEmpty()) {
+                // Supprimer l'ancienne image
+                String oldImagePath = existingCours.getImagePath();
+                if (oldImagePath != null) {
+                    Path oldPath = Paths.get(UPLOAD_DIR).resolve(oldImagePath);
+                    if (Files.exists(oldPath)) {
+                        Files.delete(oldPath);
+                    }
+                }
+
+                // Enregistrer la nouvelle
+                String newImagePath = saveImage(imageFile);
+                existingCours.setImagePath(newImagePath);
+            }
+
+            Cours updatedCours = coursInterface.updateCours(id, existingCours);
+            return new ApiResponse<>(true, "Cours mis à jour avec succès", updatedCours);
+
+        } catch (IOException e) {
+            return new ApiResponse<>(false, "Erreur image : " + e.getMessage(), null);
+        } catch (Exception e) {
+            return new ApiResponse<>(false, "Erreur : " + e.getMessage(), null);
+        }
     }
+
+    // ✅ Supprimer un cours
+    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAnyAuthority('TUTEUR', 'ADMIN')")
+    public ApiResponse<Void> deleteCours(@PathVariable Long id) {
+        try {
+            coursInterface.deleteCours(id);
+            return new ApiResponse<>(true, "Cours supprimé avec succès", null);
+        } catch (Exception e) {
+            return new ApiResponse<>(false, "Erreur lors de la suppression : " + e.getMessage(), null);
+        }
+    }
+
+    // ✅ Lister tous les cours
+    @GetMapping("/getAllCours")
+    public ApiResponse<List<Cours>> getAllCours() {
+        try {
+            return new ApiResponse<>(true, "Liste des cours récupérée", coursInterface.getAllCours());
+        } catch (Exception e) {
+            return new ApiResponse<>(false, "Erreur récupération des cours : " + e.getMessage(), null);
+        }
+    }
+
+    // ✅ Récupérer un cours par ID
+    @GetMapping("/getById/{id}")
+    @PreAuthorize("hasAnyAuthority('ETUDIANT', 'TUTEUR', 'ADMIN')")
+    public ApiResponse<Cours> getById(@PathVariable Long id) {
+        Cours cours = coursInterface.getById(id);
+        return (cours != null)
+                ? new ApiResponse<>(true, "Cours trouvé", cours)
+                : new ApiResponse<>(false, "Cours introuvable", null);
+    }
+
+    // ✅ Obtenir les cours d'un tuteur
     @GetMapping("/tuteur/{tuteurId}")
-    public List<Cours> getCoursByTuteur(@PathVariable Long tuteurId) {
-        return coursInterface.getCoursByTuteur(tuteurId);
+    @PreAuthorize("hasAnyAuthority('TUTEUR', 'ADMIN')")
+    public ApiResponse<List<Cours>> getCoursByTuteur(@PathVariable Long tuteurId) {
+        try {
+            List<Cours> coursList = coursInterface.getCoursByTuteur(tuteurId);
+            return new ApiResponse<>(true, "Cours du tuteur récupérés", coursList);
+        } catch (Exception e) {
+            return new ApiResponse<>(false, "Erreur récupération des cours du tuteur", null);
+        }
+    }
+
+    // ✅ Méthode utilitaire d'enregistrement d'image
+    private String saveImage(MultipartFile file) throws IOException {
+        String baseDir = System.getProperty("user.dir");
+        Path imageFolder = Paths.get(baseDir, UPLOAD_DIR);
+        if (!Files.exists(imageFolder)) {
+            Files.createDirectories(imageFolder);
+        }
+
+        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        Path imagePath = imageFolder.resolve(fileName);
+        file.transferTo(imagePath.toFile());
+
+        return "images/"+fileName; // On stocke juste le nom du fichier
     }
 }

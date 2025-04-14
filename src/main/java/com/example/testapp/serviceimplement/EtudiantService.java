@@ -108,4 +108,9 @@ public class EtudiantService implements EtudiantInterface {
             throw new EntityNotFoundException("Étudiant avec l'ID " + etudiantId + " non trouvé.");
         }
     }
+
+    @Override
+    public Etudiant getEtudiantByEmail(String email) {
+        return etudiantRepository.findByEmailEtudiant(email).orElse(null);
+    }
 }

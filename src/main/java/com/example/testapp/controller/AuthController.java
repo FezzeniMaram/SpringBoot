@@ -41,8 +41,8 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @PostMapping("/login/etudiant")
-    public AuthResponse loginEtudiant(@RequestBody AuthRequest request) {
+    @PostMapping("/login")
+    public AuthResponse login(@RequestBody AuthRequest request) {
         String email = request.getEmail();
         String password = request.getPassword();
 
@@ -50,79 +50,37 @@ public class AuthController {
             return new AuthResponse(false, "Email ou mot de passe manquant.", null, null);
         }
 
-        Optional<Etudiant> etu = etudiantRepository.findByEmailEtudiant(email);
-        if (etu.isEmpty()) {
-            return new AuthResponse(false, "Aucun étudiant trouvé avec cet email.", null, null);
-        }
-
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(email, password)
-            );
-
-            String token = jwtUtil.generateToken(email, "ETUDIANT");
-            return new AuthResponse(true, "Connexion réussie", token, "ETUDIANT");
-
-        } catch (BadCredentialsException e) {
-            return new AuthResponse(false, "Mot de passe incorrect.", null, null);
-        }
-    }
-
-    @PostMapping("/login/tuteur")
-    public AuthResponse loginTuteur(@RequestBody AuthRequest request) {
-        String email = request.getEmail();
-        String password = request.getPassword();
-
-        if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
-            return new AuthResponse(false, "Email ou mot de passe manquant.", null, null);
-        }
-
-        Optional<Tuteur> tut = tuteurRepository.findByEmailTuteur(email);
-        if (tut.isEmpty()) {
-            return new AuthResponse(false, "Aucun tuteur trouvé avec cet email.", null, null);
-        }
-
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(email, password)
-            );
-
-            String token = jwtUtil.generateToken(email, "TUTEUR");
-            return new AuthResponse(true, "Connexion réussie", token, "TUTEUR");
-
-        } catch (BadCredentialsException e) {
-            return new AuthResponse(false, "Mot de passe incorrect.", null, null);
-        }
-    }
-
-
-    @PostMapping("/login/admin")
-    public AuthResponse loginAdmin(@RequestBody AuthRequest request) {
-        String email = request.getEmail();
-        String password = request.getPassword();
-
-        if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
-            return new AuthResponse(false, "Email ou mot de passe manquant.", null, null);
-        }
-
+        // 1. Chercher l'utilisateur dans chaque repository
+        Optional<Etudiant> etudiant = etudiantRepository.findByEmailEtudiant(email);
+        Optional<Tuteur> tuteur = tuteurRepository.findByEmailTuteur(email);
         Optional<Admin> admin = adminRepository.findByEmail(email);
-        if (admin.isEmpty()) {
-            return new AuthResponse(false, "Aucun admin trouvé avec cet email.", null, null);
+
+        String role = null;
+
+        if (etudiant.isPresent()) {
+            role = "ETUDIANT";
+        } else if (tuteur.isPresent()) {
+            role = "TUTEUR";
+        } else if (admin.isPresent()) {
+            role = "ADMIN";
+        } else {
+            return new AuthResponse(false, "Aucun utilisateur trouvé avec cet email.", null, null);
         }
 
+        // 2. Authentifier
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(email, password)
             );
-
-            String token = jwtUtil.generateToken(email, "ADMIN");
-            return new AuthResponse(true, "Connexion réussie", token, "ADMIN");
+            String token = jwtUtil.generateToken(email, role);
+            return new AuthResponse(true, "Connexion réussie", token, role);
 
         } catch (BadCredentialsException e) {
             return new AuthResponse(false, "Mot de passe incorrect.", null, null);
+        } catch (Exception e) {
+            return new AuthResponse(false, "Erreur interne : " + e.getMessage(), null, null);
         }
     }
-
 
 
 

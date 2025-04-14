@@ -17,11 +17,13 @@ public class Cours {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idCour;
     private String titreCours;
+    private String descriptionCours;
+    private String imagePath;
 
-    public Cours(String titreCours, String descriptionCours, float montantCours, Tuteur tuteur, List<Chapitre> chapitres, List<Etudiant> etudiants) {
+    public Cours(String titreCours, String descriptionCours,String imagePath ,Tuteur tuteur, List<Chapitre> chapitres, List<Etudiant> etudiants) {
         this.titreCours = titreCours;
         this.descriptionCours = descriptionCours;
-        this.montantCours = montantCours;
+        this.imagePath = imagePath;
         this.tuteur = tuteur;
         this.chapitres = chapitres;
         this.etudiants = etudiants;
@@ -38,15 +40,13 @@ public class Cours {
                 "idCour=" + idCour +
                 ", titreCours='" + titreCours + '\'' +
                 ", descriptionCours='" + descriptionCours + '\'' +
-                ", montantCours=" + montantCours +
-                ", tuteur=" + tuteur +
-                ", chapitres=" + chapitres +
-                ", etudiants=" + etudiants +
+                ", imagePath='" + imagePath + '\'' +
+                ", tuteur=" + (tuteur != null ? tuteur.getNomTuteur() : "null") +
+                ", chapitres=" + (chapitres != null ? chapitres.size() : 0) +
+                ", etudiants=" + (etudiants != null ? etudiants.size() : 0) +
                 '}';
     }
 
-    private String descriptionCours;
-    private float montantCours;
 
     public Long getIdCour() {
         return idCour;
@@ -60,9 +60,6 @@ public class Cours {
         return descriptionCours;
     }
 
-    public float getMontantCours() {
-        return montantCours;
-    }
 
     public Tuteur getTuteur() {
         return tuteur;
@@ -88,10 +85,6 @@ public class Cours {
         this.descriptionCours = descriptionCours;
     }
 
-    public void setMontantCours(float montantCours) {
-        this.montantCours = montantCours;
-    }
-
     public void setTuteur(Tuteur tuteur) {
         this.tuteur = tuteur;
     }
@@ -102,6 +95,14 @@ public class Cours {
 
     public void setEtudiants(List<Etudiant> etudiants) {
         this.etudiants = etudiants;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 
     @ManyToOne

@@ -20,7 +20,7 @@ public class CoursSerializer extends JsonSerializer<Cours> {
         jsonGenerator.writeNumberField("idCour", cours.getIdCour());
         jsonGenerator.writeStringField("titreCours", cours.getTitreCours());
         jsonGenerator.writeStringField("descriptionCours", cours.getDescriptionCours());
-        jsonGenerator.writeNumberField("montantCours", cours.getMontantCours());
+        jsonGenerator.writeStringField("imagePath",cours.getImagePath());
 
         // Sérialisation des chapitres
         List<Chapitre> chapitres = cours.getChapitres();
@@ -32,6 +32,7 @@ public class CoursSerializer extends JsonSerializer<Cours> {
                 jsonGenerator.writeStringField("titreChapitre", chapitre.getTitreChapitre());
                 jsonGenerator.writeStringField("typeChapitre", chapitre.getTypeChapitre());
                 jsonGenerator.writeStringField("contenuChapitre", chapitre.getContenuChapitre());
+
 
                 // Sérialiser les vidéos associées au chapitre
                 if (chapitre.getVideo() != null) {

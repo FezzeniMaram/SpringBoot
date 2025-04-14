@@ -27,6 +27,17 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        String uri = request.getRequestURI();
+        System.out.println("🟠 URI interceptée : " + uri);
+
+        if (uri.startsWith("/api/files/images")
+                || uri.startsWith("/api/cours/getAllCours")
+                || uri.startsWith("/api/auth")) {
+            System.out.println("✅ URI ignorée par JWT : " + uri);
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         final String authHeader = request.getHeader("Authorization");
         String username = null;
         String jwt = null;
@@ -49,4 +60,5 @@ public class JwtFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+
 }

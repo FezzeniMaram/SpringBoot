@@ -24,25 +24,26 @@ public class SecurityConfig {
     }
 
     @Bean
-
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Désactivation de CSRF pour les API REST
+                .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(
-                        org.springframework.security.config.http.SessionCreationPolicy.STATELESS
-                ))
+                        org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll() // Permet l'accès aux routes d'authentification
-                        .requestMatchers("/etudiant/**").hasAuthority("ETUDIANT") // Accès restreint aux étudiants
-                        .requestMatchers("/tuteur/**").hasAuthority("TUTEUR") // Accès restreint aux tuteurs
-                        .requestMatchers("/admin/**").hasAuthority("ADMIN") // Accès restreint à l'admin
+                        .requestMatchers("/files/**").permitAll()
+                        .requestMatchers("/cours/getAllCours").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/error").permitAll()
+                        .requestMatchers("/etudiant/**").hasAuthority("ETUDIANT")
+                        .requestMatchers("/tuteur/**").hasAuthority("TUTEUR")
+                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
-                        );// Autres routes authentifiées
-
+                );
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
 
 
     @Bean

@@ -17,5 +17,5 @@ public interface EtudiantInterface {
     public String authenEtudiant(String emailEtudiant, String motPasseEtudiant);
     public String inscrireEtudiantAuCours(Long etudiantId , Long coursId);
     List<Cours> getCoursByEtudiant(Long etudiantId);
-
+    Etudiant getEtudiantByEmail(String email);
 }
