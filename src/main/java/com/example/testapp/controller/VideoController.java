@@ -67,6 +67,7 @@ public class VideoController {
 
     // ✅ Récupérer toutes les vidéos (ouvert à tous)
     @GetMapping("/getAllVideo")
+
     @PreAuthorize("hasAnyAuthority('ETUDIANT', 'TUTEUR', 'ADMIN')")
     public ApiResponse<List<Video>> getAllVideo() {
         try {

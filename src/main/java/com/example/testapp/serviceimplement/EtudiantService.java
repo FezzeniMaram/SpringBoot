@@ -54,7 +54,7 @@ public class EtudiantService implements EtudiantInterface {
     public Etudiant updateEtudiant(Long id, Etudiant etudiant) {
         Etudiant etudiant1 = etudiantRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Etudiant avec l'ID " + id + " non trouvé"));
         etudiant1.setNomEtudiant(etudiant.getNomEtudiant());
-        etudiant1.setEmailEtudiant(etudiant.getEmailEtudiant());
+        etudiant1.setMotPasseEtudiant(etudiant.getMotPasseEtudiant());
 
         return etudiantRepository.save(etudiant1);
     }
@@ -113,4 +113,25 @@ public class EtudiantService implements EtudiantInterface {
     public Etudiant getEtudiantByEmail(String email) {
         return etudiantRepository.findByEmailEtudiant(email).orElse(null);
     }
-}
+
+    @Override
+    public String supprimerCoursEtudiant(Long etudiantId, Long coursId) {
+        Optional<Etudiant> etudiantOpt = etudiantRepository.findById(etudiantId);
+        Optional<Cours> coursOpt = coursRepository.findById(coursId);
+
+        if (etudiantOpt.isPresent() && coursOpt.isPresent()) {
+            Etudiant etudiant = etudiantOpt.get();
+            Cours cours = coursOpt.get();
+
+            if (etudiant.getCoursInscrits().contains(cours)) {
+                etudiant.getCoursInscrits().remove(cours);
+                etudiantRepository.save(etudiant);
+                return "Cours supprimé avec succès de la liste de l'étudiant.";
+            } else {
+                return "L'étudiant n'est pas inscrit à ce cours.";
+            }
+        }
+        return "Cours ou étudiant introuvable.";
+    }
+    }
+

@@ -5,6 +5,7 @@ import com.example.testapp.entities.Etudiant;
 import com.example.testapp.services.EtudiantInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,38 +19,43 @@ public class EtudiantController {
     @Autowired
     EtudiantInterface etudiantInterface;
 
+    // ✅ Accessible par tout le monde (inscription)
     @PostMapping("/inscrire")
     public ResponseEntity<Map<String, String>> inscrireEtudiant(@RequestBody Etudiant etudiant) {
         return etudiantInterface.inscrireEtudiant(etudiant);
     }
 
+    // ✅ Supprimer un étudiant — accessible uniquement à ADMIN
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/delete/{id}")
     public void deleteEtudiant(@PathVariable Long id) {
-        // Suppression de l'étudiant
         etudiantInterface.deleteEtudiant(id);
     }
 
+    // ✅ Mise à jour du profil — accessible uniquement à l'ETUDIANT
+    @PreAuthorize("hasAuthority('ETUDIANT')")
     @PatchMapping("/update/{id}")
     public Etudiant updateEtudiant(@PathVariable("id") Long id, @RequestBody Etudiant etudiant) {
-        // Mise à jour des informations de l'étudiant
         return etudiantInterface.updateEtudiant(id, etudiant);
     }
 
+    // ✅ Liste des étudiants — accessible uniquement à ADMIN
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/getAll")
     public List<Etudiant> getAllEtudiants() {
-        // Récupérer tous les étudiants
         return etudiantInterface.getAllEtudiants();
     }
 
+    // ✅ Récupérer un étudiant — accessible à l’étudiant ou admin
+    @PreAuthorize("hasAuthority('ETUDIANT') or hasAuthority('ADMIN')")
     @GetMapping("/getById/{id}")
     public Etudiant getEtudiantById(@PathVariable Long id) {
-        // Récupérer un étudiant par son ID
         return etudiantInterface.getEtudiantById(id);
     }
 
+    // ❌ À sécuriser si utilisé (ou à retirer si remplacé par /auth/login)
     @PostMapping("/authentification")
     public ResponseEntity<String> login(@RequestBody Map<String, String> requestBody) {
-        // Authentification d'un étudiant
         String emailEtudiant = requestBody.get("emailEtudiant");
         String motPasseEtudiant = requestBody.get("motPasseEtudiant");
 
@@ -57,22 +63,50 @@ public class EtudiantController {
         return ResponseEntity.ok(response);
     }
 
+    // ✅ Inscription à un cours — accessible à l'étudiant
+    @PreAuthorize("hasAuthority('ETUDIANT')")
     @PostMapping("/{etudiantId}/inscrire/{coursId}")
-    public ResponseEntity<String> inscrireEtudiantAuCours(@PathVariable Long etudiantId, @PathVariable Long coursId) {
-        // Inscrire un étudiant à un cours
+    public ResponseEntity<Map<String, Object>> inscrireEtudiantAuCours(@PathVariable Long etudiantId, @PathVariable Long coursId) {
         String message = etudiantInterface.inscrireEtudiantAuCours(etudiantId, coursId);
-        return ResponseEntity.ok(message);
+
+        boolean success = !message.toLowerCase().contains("déjà inscrit");
+
+        return ResponseEntity.ok(Map.of(
+                "success", success,
+                "message", message
+        ));
     }
 
-    @GetMapping("/{etudiantId}/cours")
+
+    // ✅ Liste des cours inscrits — accessible à l'étudiant
+    @PreAuthorize("hasAuthority('ETUDIANT')")
+    @GetMapping("/getcours/{etudiantId}")
     public ResponseEntity<List<Cours>> getCoursByEtudiant(@PathVariable Long etudiantId) {
-        // Récupérer la liste des cours auxquels un étudiant est inscrit
         List<Cours> coursList = etudiantInterface.getCoursByEtudiant(etudiantId);
         return ResponseEntity.ok(coursList);
     }
 
+    // ✅ Test token (facultatif)
+    @PreAuthorize("hasAuthority('ETUDIANT')")
     @GetMapping("/test")
     public String testToken() {
         return "Accès autorisé pour l'étudiant !";
+    }
+
+
+    @PreAuthorize("hasAuthority('ETUDIANT')")
+    @DeleteMapping("/{etudiantId}/supprimerCours/{coursId}")
+    public ResponseEntity<Map<String, Object>> supprimerCoursEtudiant(
+            @PathVariable Long etudiantId,
+            @PathVariable Long coursId) {
+
+        String message = etudiantInterface.supprimerCoursEtudiant(etudiantId, coursId);
+
+        boolean success = message.toLowerCase().contains("succès");
+
+        return ResponseEntity.ok(Map.of(
+                "success", success,
+                "message", message
+        ));
     }
 }

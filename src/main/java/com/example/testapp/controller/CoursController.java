@@ -27,7 +27,7 @@ public class CoursController {
 
     // ✅ Ajouter un cours → TUTEUR
     @PostMapping("/add")
-    @PreAuthorize("hasAuthority('TUTEUR')")
+    @PreAuthorize("hasAuthority('TUTEUR')") 
     public ApiResponse<Cours> addCours(
             @RequestParam("titreCours") String titreCours,
             @RequestParam("descriptionCours") String descriptionCours,
@@ -35,13 +35,8 @@ public class CoursController {
             @RequestParam("image") MultipartFile imageFile
     ) {
         try {
-            // Upload de l'image
             String imagePath = saveImage(imageFile);
-
-            // Récupération du tuteur
             Tuteur tuteur = tuteurInterface.getTuteurById(tuteurId);
-
-            // Création du cours
             Cours cours = new Cours(
                     titreCours,
                     descriptionCours,
@@ -110,12 +105,35 @@ public class CoursController {
     @PreAuthorize("hasAnyAuthority('TUTEUR', 'ADMIN')")
     public ApiResponse<Void> deleteCours(@PathVariable Long id) {
         try {
+            Cours cours = coursInterface.getById(id);
+            if (cours == null) {
+                return new ApiResponse<>(false, "Cours introuvable", null);
+            }
+
+            // ✅ Supprimer le fichier image du dossier uploads/images
+            String imagePath = cours.getImagePath(); // ex: images/xxx.jpg
+            if (imagePath != null && !imagePath.isEmpty()) {
+                Path imageFile = Paths.get(System.getProperty("user.dir"))
+                        .resolve("uploads")
+                        .resolve(imagePath); // imagePath est déjà "images/xxx.jpg"
+
+                if (Files.exists(imageFile)) {
+                    Files.delete(imageFile);
+                }
+            }
+
+            // ✅ Supprimer le cours en base
             coursInterface.deleteCours(id);
+
             return new ApiResponse<>(true, "Cours supprimé avec succès", null);
+
+        } catch (IOException e) {
+            return new ApiResponse<>(false, "Erreur lors de la suppression de l'image : " + e.getMessage(), null);
         } catch (Exception e) {
-            return new ApiResponse<>(false, "Erreur lors de la suppression : " + e.getMessage(), null);
+            return new ApiResponse<>(false, "Erreur lors de la suppression du cours : " + e.getMessage(), null);
         }
     }
+
 
     // ✅ Lister tous les cours
     @GetMapping("/getAllCours")

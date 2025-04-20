@@ -18,4 +18,5 @@ public interface EtudiantInterface {
     public String inscrireEtudiantAuCours(Long etudiantId , Long coursId);
     List<Cours> getCoursByEtudiant(Long etudiantId);
     Etudiant getEtudiantByEmail(String email);
+    String supprimerCoursEtudiant(Long etudiantId, Long coursId);
 }

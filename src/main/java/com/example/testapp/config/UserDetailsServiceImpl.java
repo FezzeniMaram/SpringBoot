@@ -27,11 +27,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        System.out.println("Recherche de l'utilisateur : " + email);
+        System.out.println("🔍 Recherche de l'utilisateur : " + email);
 
         Etudiant etu = etudiantRepository.findByEmailEtudiant(email).orElse(null);
         if (etu != null) {
-            System.out.println("✅ Étudiant trouvé !");
+            if (!etu.isActive()) {
+                System.out.println("⛔ Étudiant non activé !");
+                throw new UsernameNotFoundException("Votre compte étudiant n'est pas encore activé. Veuillez contacter l'administrateur.");
+            }
+            System.out.println("✅ Étudiant trouvé et activé !");
             return new User(
                     etu.getEmailEtudiant(),
                     etu.getMotPasseEtudiant(),
@@ -41,7 +45,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         Tuteur tut = tuteurRepository.findByEmailTuteur(email).orElse(null);
         if (tut != null) {
-            System.out.println("✅ Tuteur trouvé !");
+            if (!tut.isActive()) {
+                System.out.println("⛔ Tuteur non activé !");
+                throw new UsernameNotFoundException("Votre compte tuteur n'est pas encore activé. Veuillez contacter l'administrateur.");
+            }
+            System.out.println("✅ Tuteur trouvé et activé !");
             return new User(
                     tut.getEmailTuteur(),
                     tut.getMotPasseTuteur(),

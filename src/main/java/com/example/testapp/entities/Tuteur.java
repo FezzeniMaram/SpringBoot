@@ -24,6 +24,9 @@ public class Tuteur {
     private  String motPasseTuteur;
     @Enumerated(EnumType.STRING)
     private Role role = Role.TUTEUR;
+    @Column(nullable = false)
+    private boolean active = false;
+
 
     @Override
     public String toString() {
@@ -81,6 +84,14 @@ public class Tuteur {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     @OneToMany(mappedBy = "tuteur", cascade = CascadeType.ALL)

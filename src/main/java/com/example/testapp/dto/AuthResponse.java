@@ -5,12 +5,17 @@ public class AuthResponse {
     private String message;
     private String token;
     private String role;
+    private String username;
+    private Long id;
 
-    public AuthResponse(boolean success, String message, String token, String role) {
+    public AuthResponse(boolean success, String message, String token, String role, String username, Long id) {
         this.success = success;
         this.message = message;
         this.token = token;
         this.role = role;
+        this.username = username;
+        this.id = id;
+
     }
 
     public boolean isSuccess() {
@@ -43,5 +48,21 @@ public class AuthResponse {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

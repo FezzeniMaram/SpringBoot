@@ -21,6 +21,9 @@ public class Etudiant {
         private  String emailEtudiant;
         private  String motPasseEtudiant;
         private Role role = Role.ETUDIANT;
+        @Column(nullable = false)
+        private boolean active = false;
+
 
 
         public Long getIdEtudiant() {
@@ -81,6 +84,14 @@ public class Etudiant {
 
         public void setRole(Role role) {
                 this.role = role;
+        }
+
+        public boolean isActive() {
+                return active;
+        }
+
+        public void setActive(boolean active) {
+                this.active = active;
         }
 
         public List<Cours> getCoursInscrits() {
