@@ -8,11 +8,16 @@ import com.example.testapp.services.CoursInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 
 @RestController
-@RequestMapping( "/chapitre")
+@RequestMapping("/chapitre")
 public class ChapitreController {
 
     @Autowired
@@ -21,34 +26,56 @@ public class ChapitreController {
     @Autowired
     private CoursInterface coursInterface;
 
-    // ✅ Ajouter un chapitre (TUTEUR uniquement)
-    @PostMapping("/addChapitre")
+    // ✅ Ajouter un chapitre (avec vidéo) → TUTEUR
+    @PostMapping("/add")
     @PreAuthorize("hasAuthority('TUTEUR')")
-    public ApiResponse<Chapitre> addChapitre(@RequestBody Map<String, Object> requestData) {
+    public ApiResponse<Chapitre> addChapitre(
+            @RequestParam("titreChapitre") String titreChapitre,
+            @RequestParam("contenuChapitre") String contenuChapitre,
+            @RequestParam("id_cour") Long coursId,
+            @RequestParam("video") MultipartFile videoFile
+    ) {
         try {
-            Long coursId = requestData.get("id_cour") != null
-                    ? Long.valueOf(requestData.get("id_cour").toString()) : null;
-
+            String videoPath = saveVideo(videoFile);
             Cours cours = coursInterface.getCoursById(coursId);
 
-            Chapitre chapitre = new Chapitre(
-                    null,
-                    requestData.get("titreChapitre").toString(),
-                    requestData.get("typeChapitre").toString(),
-                    requestData.get("contenuChapitre").toString(),
-                    cours,
-                    null
-            );
-
+            Chapitre chapitre = new Chapitre(null, titreChapitre, contenuChapitre,  videoPath, cours);
             Chapitre saved = chapitreIntreface.addChapitre(chapitre);
             return new ApiResponse<>(true, "Chapitre ajouté avec succès", saved);
 
+        } catch (IOException e) {
+            return new ApiResponse<>(false, "Erreur upload vidéo : " + e.getMessage(), null);
         } catch (Exception e) {
-            return new ApiResponse<>(false, "Erreur lors de l'ajout du chapitre : " + e.getMessage(), null);
+            return new ApiResponse<>(false, "Erreur ajout chapitre : " + e.getMessage(), null);
         }
     }
 
-    // ✅ Supprimer un chapitre (TUTEUR ou ADMIN)
+    private String saveVideo(MultipartFile file) throws IOException {
+        String uploadDir = "uploads/videos/";
+
+        // Générer un ID unique
+        String uniqueId = IdGenerator.generateId();
+
+        // Extraire extension (.mp4, .jpg, etc)
+        String extension = "";
+        String originalName = file.getOriginalFilename();
+        if (originalName != null && originalName.contains(".")) {
+            extension = originalName.substring(originalName.lastIndexOf('.'));
+        }
+
+        // Construire le nom du fichier avec l'ID
+        String fileName = uniqueId + extension;
+
+        Path path = Paths.get(uploadDir, fileName);
+        Files.createDirectories(path.getParent());
+        file.transferTo(path);
+
+        return fileName; // ✅ Retourner juste l'ObjectId+extension
+    }
+
+
+
+    // ✅ Supprimer un chapitre
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyAuthority('TUTEUR', 'ADMIN')")
     public ApiResponse<Void> deleteChapitre(@PathVariable Long id) {
@@ -56,43 +83,52 @@ public class ChapitreController {
             chapitreIntreface.deletChapitre(id);
             return new ApiResponse<>(true, "Chapitre supprimé avec succès", null);
         } catch (Exception e) {
-            return new ApiResponse<>(false, "Erreur lors de la suppression : " + e.getMessage(), null);
+            return new ApiResponse<>(false, "Erreur suppression : " + e.getMessage(), null);
         }
     }
 
-    // ✅ Modifier un chapitre (TUTEUR ou ADMIN)
+    // ✅ Modifier un chapitre (titre + contenu)
     @PatchMapping("/update/{id}")
     @PreAuthorize("hasAnyAuthority('TUTEUR', 'ADMIN')")
-    public ApiResponse<Chapitre> updateChappitre(@PathVariable Long id, @RequestBody Chapitre chapitre) {
+    public ApiResponse<Chapitre> updateChapitre(@PathVariable Long id, @RequestBody Chapitre chapitre) {
         try {
             Chapitre updated = chapitreIntreface.updateChapitre(id, chapitre);
-            return new ApiResponse<>(true, "Chapitre mis à jour", updated);
+            return new ApiResponse<>(true, "Chapitre modifié", updated);
         } catch (Exception e) {
-            return new ApiResponse<>(false, "Erreur lors de la mise à jour", null);
+            return new ApiResponse<>(false, "Erreur update : " + e.getMessage(), null);
         }
     }
 
-    // ✅ Lister tous les chapitres (accessible à tous)
-    @GetMapping("/getAllChapitre")
+    // ✅ Lister tous les chapitres
+    @GetMapping("/getAll")
     @PreAuthorize("hasAnyAuthority('ETUDIANT', 'TUTEUR', 'ADMIN')")
     public ApiResponse<List<Chapitre>> getAllChapitre() {
         try {
-            List<Chapitre> list = chapitreIntreface.getAllChapitre();
-            return new ApiResponse<>(true, "Liste des chapitres récupérée", list);
+            return new ApiResponse<>(true, "Liste chapitres", chapitreIntreface.getAllChapitre());
         } catch (Exception e) {
-            return new ApiResponse<>(false, "Erreur lors de la récupération des chapitres", null);
+            return new ApiResponse<>(false, "Erreur get all : " + e.getMessage(), null);
         }
     }
 
-    // ✅ Obtenir un chapitre par ID (accessible à tous)
+    // ✅ Récupérer chapitre par ID
     @GetMapping("/getById/{id}")
     @PreAuthorize("hasAnyAuthority('ETUDIANT', 'TUTEUR', 'ADMIN')")
-    public ApiResponse<Chapitre> getChapitreById(@PathVariable Long id) {
+    public ApiResponse<Chapitre> getById(@PathVariable Long id) {
         Chapitre chapitre = chapitreIntreface.getChapirteById(id);
-        if (chapitre != null) {
-            return new ApiResponse<>(true, "Chapitre trouvé", chapitre);
-        } else {
-            return new ApiResponse<>(false, "Chapitre introuvable", null);
+        return (chapitre != null)
+                ? new ApiResponse<>(true, "Chapitre trouvé", chapitre)
+                : new ApiResponse<>(false, "Chapitre introuvable", null);
+    }
+
+    // ✅ Récupérer tous les chapitres d’un cours
+    @GetMapping("/getChapitresByCours/{coursId}")
+    @PreAuthorize("hasAnyAuthority('TUTEUR', 'ETUDIANT', 'ADMIN')")
+    public ApiResponse<List<Chapitre>> getByCours(@PathVariable Long coursId) {
+        try {
+            List<Chapitre> list = chapitreIntreface.getChapitresByCoursId(coursId);
+            return new ApiResponse<>(true, "Chapitres du cours", list);
+        } catch (Exception e) {
+            return new ApiResponse<>(false, "Erreur get chapitres cours : " + e.getMessage(), null);
         }
     }
 }

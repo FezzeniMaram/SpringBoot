@@ -1,5 +1,6 @@
 package com.example.testapp.controller;
 
+import com.example.testapp.dto.UpdateEtudiantRequest;
 import com.example.testapp.entities.Cours;
 import com.example.testapp.entities.Etudiant;
 import com.example.testapp.services.EtudiantInterface;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,9 +36,66 @@ public class EtudiantController {
 
     // ✅ Mise à jour du profil — accessible uniquement à l'ETUDIANT
     @PreAuthorize("hasAuthority('ETUDIANT')")
-    @PatchMapping("/update/{id}")
-    public Etudiant updateEtudiant(@PathVariable("id") Long id, @RequestBody Etudiant etudiant) {
-        return etudiantInterface.updateEtudiant(id, etudiant);
+    @PutMapping("/updateNom/{id}")
+    public ResponseEntity<Map<String, Object>> updateNom(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> request) {
+
+        Map<String, Object> response = new HashMap<>();
+        String ancienMotDePasse = request.get("ancienMotDePasse");
+        String nouveauNom = request.get("nouveauNom");
+
+        try {
+            Etudiant updatedEtudiant = etudiantInterface.updateNom(id, ancienMotDePasse, nouveauNom);
+
+            response.put("success", true);
+            response.put("message", "Nom mis à jour avec succès.");
+            response.put("data", updatedEtudiant);
+
+            return ResponseEntity.ok(response);
+
+        } catch (IllegalArgumentException e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Erreur lors de la mise à jour du nom.");
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+    // ✅ Modifier seulement le MOT DE PASSE
+    @PreAuthorize("hasAuthority('ETUDIANT')")
+    @PutMapping("/updateMotDePasse/{id}")
+    public ResponseEntity<Map<String, Object>> updateMotDePasse(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> request) {
+
+        Map<String, Object> response = new HashMap<>();
+        String ancienMotDePasse = request.get("ancienMotDePasse");
+        String nouveauMotDePasse = request.get("nouveauMotDePasse");
+
+        try {
+            Etudiant updatedEtudiant = etudiantInterface.updateMotDePasse(id, ancienMotDePasse, nouveauMotDePasse);
+
+            response.put("success", true);
+            response.put("message", "Mot de passe mis à jour avec succès.");
+            response.put("data", updatedEtudiant);
+
+            return ResponseEntity.ok(response);
+
+        } catch (IllegalArgumentException e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Erreur lors de la mise à jour du mot de passe.");
+            return ResponseEntity.internalServerError().body(response);
+        }
     }
 
     // ✅ Liste des étudiants — accessible uniquement à ADMIN
@@ -46,12 +105,32 @@ public class EtudiantController {
         return etudiantInterface.getAllEtudiants();
     }
 
-    // ✅ Récupérer un étudiant — accessible à l’étudiant ou admin
     @PreAuthorize("hasAuthority('ETUDIANT') or hasAuthority('ADMIN')")
     @GetMapping("/getById/{id}")
-    public Etudiant getEtudiantById(@PathVariable Long id) {
-        return etudiantInterface.getEtudiantById(id);
+    public ResponseEntity<Map<String, Object>> getEtudiantById(@PathVariable Long id) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            Etudiant etudiant = etudiantInterface.getEtudiantById(id);
+
+            if (etudiant != null) {
+                response.put("success", true);
+                response.put("message", "Étudiant trouvé avec succès.");
+                response.put("data", etudiant);
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("success", false);
+                response.put("message", "Étudiant introuvable.");
+                return ResponseEntity.status(404).body(response);
+            }
+
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Erreur lors de la récupération de l'étudiant.");
+            return ResponseEntity.internalServerError().body(response);
+        }
     }
+
 
     // ❌ À sécuriser si utilisé (ou à retirer si remplacé par /auth/login)
     @PostMapping("/authentification")

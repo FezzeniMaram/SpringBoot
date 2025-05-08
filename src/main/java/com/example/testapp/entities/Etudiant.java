@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -23,8 +24,14 @@ public class Etudiant {
         private Role role = Role.ETUDIANT;
         @Column(nullable = false)
         private boolean active = false;
+        @Enumerated(EnumType.STRING)
+        @Column(length = 10)
+        private Gender gender;
+        @Column(name = "date_naissance")
+        private LocalDate dateNaissanceEtudiant;
 
 
+        public Etudiant() {}
 
         public Long getIdEtudiant() {
                 return idEtudiant;
@@ -98,6 +105,23 @@ public class Etudiant {
                 return coursInscrits;
         }
 
+
+        public Gender getGender() {
+                return gender;
+        }
+
+        public void setGender(Gender gender) {
+                this.gender = gender;
+        }
+
+        public LocalDate getDateNaissanceEtudiant() {
+                return dateNaissanceEtudiant;
+        }
+
+        public void setDateNaissanceEtudiant(LocalDate dateNaissanceEtudiant) {
+                this.dateNaissanceEtudiant = dateNaissanceEtudiant;
+        }
+
         @OneToMany(mappedBy = "etudiant", cascade = CascadeType.ALL)
         private List<Avis> avis;
         @OneToMany(mappedBy = "etudiant", cascade = CascadeType.ALL)
@@ -110,5 +134,7 @@ public class Etudiant {
         )
         private List<Cours> coursInscrits;
 
-
+        public Etudiant(Long id) {
+                this.idEtudiant = id;
+        }
 }

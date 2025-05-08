@@ -6,6 +6,7 @@ import com.example.testapp.entities.Tuteur;
 import com.example.testapp.services.CoursInterface;
 import com.example.testapp.services.TuteurInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -170,15 +171,29 @@ public class CoursController {
     // ✅ Méthode utilitaire d'enregistrement d'image
     private String saveImage(MultipartFile file) throws IOException {
         String baseDir = System.getProperty("user.dir");
-        Path imageFolder = Paths.get(baseDir, UPLOAD_DIR);
+        String uploadDir = "uploads/images";
+        Path imageFolder = Paths.get(baseDir, uploadDir);
+
         if (!Files.exists(imageFolder)) {
             Files.createDirectories(imageFolder);
         }
 
-        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+
+        String uniqueId = IdGenerator.generateId();
+
+        String extension = "";
+        String originalName = file.getOriginalFilename();
+        if (originalName != null && originalName.contains(".")) {
+            extension = originalName.substring(originalName.lastIndexOf('.'));
+        }
+
+        String fileName = uniqueId + extension;
+
         Path imagePath = imageFolder.resolve(fileName);
         file.transferTo(imagePath.toFile());
-
-        return "images/"+fileName; // On stocke juste le nom du fichier
+        return "images/" + fileName;
     }
+
+
+
 }

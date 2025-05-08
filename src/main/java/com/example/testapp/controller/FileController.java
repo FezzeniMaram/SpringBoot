@@ -39,4 +39,33 @@ public class FileController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    private static final String VIDEO_DIR = "uploads/videos";
+
+    @GetMapping("/videos/{filename:.+}")
+    public ResponseEntity<Resource> getVideo(@PathVariable String filename) {
+        try {
+            Path filePath = Paths.get(System.getProperty("user.dir"))
+                    .resolve(VIDEO_DIR)
+                    .resolve(filename);
+
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (!resource.exists() || !resource.isReadable()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            String contentType = Files.probeContentType(filePath);
+            if (contentType == null) {
+                contentType = "video/mp4"; // par défaut
+            }
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .body(resource);
+
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

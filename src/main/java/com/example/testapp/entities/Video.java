@@ -15,11 +15,14 @@ public class Video {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String titre;
+    private String videoPath;
 
-    public Video(Long id, String titre, Chapitre chapitre) {
+    public Video(Long id, String titre, Chapitre chapitre,String videoPath ) {
         this.id = id;
         this.titre = titre;
         this.chapitre = chapitre;
+        this.videoPath = videoPath;
+
     }
 
     public Video(){
@@ -30,8 +33,17 @@ public class Video {
         return "Video{" +
                 "id=" + id +
                 ", titre='" + titre + '\'' +
+                ", videoPath='" + videoPath + '\'' +
                 ", chapitre=" + chapitre +
                 '}';
+    }
+
+    public String getVideoPath() {
+        return videoPath;
+    }
+
+    public void setVideoPath(String videoPath) {
+        this.videoPath = videoPath;
     }
 
     public Long getId() {

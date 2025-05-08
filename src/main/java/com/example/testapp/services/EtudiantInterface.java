@@ -12,8 +12,11 @@ public interface EtudiantInterface {
     void deleteEtudiant (Long id);
     public List<Etudiant>getAllEtudiants();
     public Etudiant getEtudiantById(Long id);
-    
-    public  Etudiant updateEtudiant(Long id, Etudiant etudiant);
+
+    Etudiant updateNom(Long id, String ancienMotDePasse, String nouveauNom);
+
+    Etudiant updateMotDePasse(Long id, String ancienMotDePasse, String nouveauMotDePasse);
+
     public String authenEtudiant(String emailEtudiant, String motPasseEtudiant);
     public String inscrireEtudiantAuCours(Long etudiantId , Long coursId);
     List<Cours> getCoursByEtudiant(Long etudiantId);

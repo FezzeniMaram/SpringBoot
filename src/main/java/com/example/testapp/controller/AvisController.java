@@ -16,9 +16,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
-@RequestMapping( "/avis")
+@RequestMapping("/avis")
 public class AvisController {
 
     @Autowired
@@ -33,22 +34,30 @@ public class AvisController {
     @Autowired
     private TuteurRepository tuteurRepository;
 
-    // ✅ Ajouter un avis (accessible à tous)
+    // ✅ Ajouter un avis (étudiant ou tuteur)
     @PostMapping("/add")
-    @PreAuthorize("hasAnyAuthority('ETUDIANT', 'TUTEUR', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ETUDIANT', 'TUTEUR')")
     public ApiResponse<Avis> addAvis(@RequestBody Map<String, Object> requestData) {
         try {
             String email = getCurrentEmail();
             Etudiant etudiant = etudiantInterface.getEtudiantByEmail(email);
-            if (etudiant == null) etudiant = new Etudiant(); // facultatif si l'auteur est admin
-
+            Optional<Tuteur> optionalTuteur  = tuteurRepository.findByEmailTuteur(email);
             Long coursId = Long.valueOf(requestData.get("cours_id").toString());
             Cours cours = coursInterface.getCoursById(coursId);
 
-            Avis avis = new Avis(null, requestData.get("commentaire_avis").toString(), etudiant, cours);
-            Avis saved = avisInterface.addAvis(avis);
+            Avis avis = new Avis();
+            avis.setCommentaireAvis(requestData.get("commentaire_avis").toString());
+            avis.setCours(cours);
 
+            if (etudiant != null) {
+                avis.setEtudiant(etudiant);
+            } else if (optionalTuteur  != null) {
+                avis.setTuteur(optionalTuteur.get());
+            }
+
+            Avis saved = avisInterface.addAvis(avis);
             return new ApiResponse<>(true, "Avis ajouté avec succès", saved);
+
         } catch (Exception e) {
             return new ApiResponse<>(false, "Erreur : " + e.getMessage(), null);
         }
@@ -60,20 +69,26 @@ public class AvisController {
     public ApiResponse<Void> deleteAvis(@PathVariable Long id) {
         try {
             Avis avis = avisInterface.getAvisById(id);
-            String email = getCurrentEmail();
-            boolean isAdmin = hasRole("ADMIN");
-
             if (avis == null) {
                 return new ApiResponse<>(false, "Avis introuvable", null);
             }
 
-            // Étudiant ou Tuteur qui a posté l'avis ?
+            String email = getCurrentEmail();
+            boolean isAdmin = hasRole("ADMIN");
+
+            // Auteur étudiant
             if (avis.getEtudiant() != null && avis.getEtudiant().getEmailEtudiant().equals(email)) {
                 avisInterface.deleteAvis(id);
-                return new ApiResponse<>(true, "Avis supprimé", null);
+                return new ApiResponse<>(true, "Avis supprimé (étudiant)", null);
             }
 
-            // Tuteur du cours ?
+            // Auteur tuteur
+            if (avis.getTuteur() != null && avis.getTuteur().getEmailTuteur().equals(email)) {
+                avisInterface.deleteAvis(id);
+                return new ApiResponse<>(true, "Avis supprimé (tuteur auteur)", null);
+            }
+
+            // Tuteur du cours
             Cours cours = avis.getCours();
             Tuteur tuteur = cours.getTuteur();
             if (tuteur != null && tuteur.getEmailTuteur().equals(email)) {
@@ -81,7 +96,7 @@ public class AvisController {
                 return new ApiResponse<>(true, "Avis supprimé (tuteur du cours)", null);
             }
 
-            // Admin ?
+            // Admin
             if (isAdmin) {
                 avisInterface.deleteAvis(id);
                 return new ApiResponse<>(true, "Avis supprimé (admin)", null);
@@ -94,22 +109,28 @@ public class AvisController {
         }
     }
 
-    // ✅ Modifier un avis (uniquement par son auteur)
+    // ✅ Modifier un avis
     @PatchMapping("/update/{id}")
     @PreAuthorize("hasAnyAuthority('ETUDIANT', 'TUTEUR')")
     public ApiResponse<Avis> updateAvis(@PathVariable Long id, @RequestBody Avis avisModif) {
         try {
             Avis avis = avisInterface.getAvisById(id);
-            String email = getCurrentEmail();
-
             if (avis == null) {
                 return new ApiResponse<>(false, "Avis introuvable", null);
             }
 
+            String email = getCurrentEmail();
+
+            // Étudiant auteur
             if (avis.getEtudiant() != null && avis.getEtudiant().getEmailEtudiant().equals(email)) {
                 avis.setCommentaireAvis(avisModif.getCommentaireAvis());
-                Avis updated = avisInterface.updateAvis(id, avis);
-                return new ApiResponse<>(true, "Avis modifié avec succès", updated);
+                return new ApiResponse<>(true, "Avis modifié", avisInterface.updateAvis(id, avis));
+            }
+
+            // Tuteur auteur
+            if (avis.getTuteur() != null && avis.getTuteur().getEmailTuteur().equals(email)) {
+                avis.setCommentaireAvis(avisModif.getCommentaireAvis());
+                return new ApiResponse<>(true, "Avis modifié", avisInterface.updateAvis(id, avis));
             }
 
             return new ApiResponse<>(false, "Vous n'avez pas le droit de modifier cet avis", null);
@@ -144,7 +165,7 @@ public class AvisController {
     }
 
     // ======================
-    // 🔐 Outils de sécurité
+    // 🔐 Méthodes de sécurité
     // ======================
     private String getCurrentEmail() {
         return SecurityContextHolder.getContext().getAuthentication().getName();

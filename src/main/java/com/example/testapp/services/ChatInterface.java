@@ -6,6 +6,6 @@ import java.util.List;
 
 
 public interface ChatInterface {
-    public Chat addChat(Chat chat);
-    public List<Chat> getChat(Chat chat);
+    Chat envoyerMessage(Long conversationId, Chat chat);
+    List<Chat> getMessages(Long conversationId, String role);
 }

@@ -15,31 +15,31 @@ public class Chapitre {
     @GeneratedValue(strategy = GenerationType.IDENTITY )
     private Long idChapitre;
     private String titreChapitre;
-    private String typeChapitre;
     private String contenuChapitre;
+    private String videoPath;
 
 
-    public Chapitre(Long idChapitre, String titreChapitre, String typeChapitre, String contenuChapitre, Cours cours, Video video) {
+    public Chapitre(Long idChapitre, String titreChapitre, String contenuChapitre, String videoPath, Cours cours) {
         this.idChapitre = idChapitre;
         this.titreChapitre = titreChapitre;
-        this.typeChapitre = typeChapitre;
         this.contenuChapitre = contenuChapitre;
+        this.videoPath = videoPath;
         this.cours = cours;
-        this.video = video;
+
     }
 
     public Chapitre(){
 
     }
+
     @Override
     public String toString() {
         return "Chapitre{" +
                 "idChapitre=" + idChapitre +
                 ", titreChapitre='" + titreChapitre + '\'' +
-                ", typeChapitre='" + typeChapitre + '\'' +
                 ", contenuChapitre='" + contenuChapitre + '\'' +
+                ", videoPath='" + videoPath + '\'' +
                 ", cours=" + cours +
-                ", video=" + video +
                 '}';
     }
 
@@ -47,54 +47,45 @@ public class Chapitre {
         return idChapitre;
     }
 
-    public String getTitreChapitre() {
-        return titreChapitre;
-    }
-
-    public String getTypeChapitre() {
-        return typeChapitre;
-    }
-
-    public String getContenuChapitre() {
-        return contenuChapitre;
-    }
-
-    public Cours getCours() {
-        return cours;
-    }
-
-    public Video getVideo() {
-        return video;
-    }
-
     public void setIdChapitre(Long idChapitre) {
         this.idChapitre = idChapitre;
+    }
+
+    public String getTitreChapitre() {
+        return titreChapitre;
     }
 
     public void setTitreChapitre(String titreChapitre) {
         this.titreChapitre = titreChapitre;
     }
 
-    public void setTypeChapitre(String typeChapitre) {
-        this.typeChapitre = typeChapitre;
+    public String getContenuChapitre() {
+        return contenuChapitre;
     }
 
     public void setContenuChapitre(String contenuChapitre) {
         this.contenuChapitre = contenuChapitre;
     }
 
+    public String getVideoPath() {
+        return videoPath;
+    }
+
+    public void setVideoPath(String videoPath) {
+        this.videoPath = videoPath;
+    }
+
+    public Cours getCours() {
+        return cours;
+    }
+
     public void setCours(Cours cours) {
         this.cours = cours;
     }
 
-    public void setVideo(Video video) {
-        this.video = video;
-    }
 
     @ManyToOne
     @JoinColumn(name = "cours_id")
     private Cours cours;
 
-    @OneToOne(mappedBy = "chapitre", cascade = CascadeType.ALL)
-    private Video video;
 }

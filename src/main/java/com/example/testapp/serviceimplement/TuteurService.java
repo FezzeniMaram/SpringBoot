@@ -2,10 +2,12 @@ package com.example.testapp.serviceimplement;
 
 import com.example.testapp.entities.Cours;
 import com.example.testapp.entities.Tuteur;
+import com.example.testapp.repository.CoursRepository;
 import com.example.testapp.repository.TuteurRepository;
 import com.example.testapp.services.TuteurInterface;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +17,11 @@ import java.util.Optional;
 public class TuteurService implements TuteurInterface {
     @Autowired
     TuteurRepository tuteurRepository;
+    @Autowired
+    PasswordEncoder passwordEncoder;
+    @Autowired
+    CoursRepository coursRepository;
+
     @Override
     public String inscrireTuteur(Tuteur tuteur) {
         if (tuteurRepository.existsByEmailTuteur(tuteur.getEmailTuteur())) {
@@ -40,12 +47,39 @@ public class TuteurService implements TuteurInterface {
         return tuteurRepository.findById(id).orElse(null);
     }
 
+    public Tuteur updateNom(Long id, String ancienMotDePasse, String nouveauNom) {
+        Tuteur tuteur = tuteurRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Tuteur avec ID " + id + " non trouvé."));
+
+        if (ancienMotDePasse == null || ancienMotDePasse.isBlank() ||
+                !passwordEncoder.matches(ancienMotDePasse, tuteur.getMotPasseTuteur())) {
+            throw new IllegalArgumentException("Ancien mot de passe incorrect ou manquant.");
+        }
+
+        if (nouveauNom == null || nouveauNom.isBlank()) {
+            throw new IllegalArgumentException("Le nouveau nom ne peut pas être vide.");
+        }
+
+        tuteur.setNomTuteur(nouveauNom);
+        return tuteurRepository.save(tuteur);
+    }
+
     @Override
-    public Tuteur updateTuteur(Long id, Tuteur tuteur) {
-        Tuteur tuteur1 = tuteurRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Etudiant avec l'ID " + id + " non trouvé"));
-        tuteur1.setNomTuteur(tuteur.getNomTuteur());
-        tuteur1.setEmailTuteur(tuteur.getNomTuteur());
-        return tuteurRepository.save(tuteur1);
+    public Tuteur updateMotDePasse(Long id, String ancienMotDePasse, String nouveauMotDePasse) {
+        Tuteur tuteur = tuteurRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Tuteur avec ID " + id + " non trouvé."));
+
+        if (ancienMotDePasse == null || ancienMotDePasse.isBlank() ||
+                !passwordEncoder.matches(ancienMotDePasse, tuteur.getMotPasseTuteur())) {
+            throw new IllegalArgumentException("Ancien mot de passe incorrect ou manquant.");
+        }
+
+        if (nouveauMotDePasse == null || nouveauMotDePasse.isBlank()) {
+            throw new IllegalArgumentException("Le nouveau mot de passe ne peut pas être vide.");
+        }
+
+        tuteur.setMotPasseTuteur(passwordEncoder.encode(nouveauMotDePasse));
+        return tuteurRepository.save(tuteur);
     }
 
     @Override
@@ -74,6 +108,11 @@ public class TuteurService implements TuteurInterface {
             return coursPublies;
         }
         return "Tuteur non trouvé";
+    }
+
+    @Override
+    public int getNombreCoursPublies(Long idTuteur) {
+        return coursRepository.countByTuteurIdTuteur(idTuteur);
     }
 
 }

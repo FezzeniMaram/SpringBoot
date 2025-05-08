@@ -17,18 +17,15 @@ public class ChapitreSerializer extends JsonSerializer<Chapitre> {
         // Sérialiser les champs du chapitre
         jsonGenerator.writeNumberField("idchapitre", chapitre.getIdChapitre());
         jsonGenerator.writeStringField("titreChapitre", chapitre.getTitreChapitre());
-        jsonGenerator.writeStringField("typeChapitre", chapitre.getTypeChapitre());
         jsonGenerator.writeStringField("contenuChapitre", chapitre.getContenuChapitre());
+        jsonGenerator.writeStringField("videoPath", chapitre.getVideoPath());
 
-
-        // Vérifier si une vidéo existe et la sérialiser
-        if (chapitre.getVideo() != null) {
-            jsonGenerator.writeObjectFieldStart("video");
-            Video video = chapitre.getVideo();
-            jsonGenerator.writeNumberField("id", video.getId());
-            jsonGenerator.writeStringField("titre", video.getTitre());
+        if (chapitre.getCours() != null) {
+            jsonGenerator.writeObjectFieldStart("cours");
+            jsonGenerator.writeNumberField("idCour", chapitre.getCours().getIdCour());
             jsonGenerator.writeEndObject();
         }
+
 
         jsonGenerator.writeEndObject();
     }

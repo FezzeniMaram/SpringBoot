@@ -94,6 +94,8 @@ public class CoursService implements CoursInterface {
         return coursRepository.findById(coursId).orElse(null);
     }
 
+
+
     // 🔐 Outils utilitaires de sécurité
     private String getCurrentEmail() {
         return SecurityContextHolder.getContext().getAuthentication().getName();

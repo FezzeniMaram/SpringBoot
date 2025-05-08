@@ -20,7 +20,6 @@ public class AvisService implements AvisInterface {
         return avisRepository.save(avis);
     }
 
-
     @Override
     public void deleteAvis(Long id) {
         if (!avisRepository.existsById(id)) {

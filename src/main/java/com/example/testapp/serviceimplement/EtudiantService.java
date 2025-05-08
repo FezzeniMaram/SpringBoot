@@ -8,6 +8,7 @@ import com.example.testapp.services.EtudiantInterface;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +23,8 @@ public class EtudiantService implements EtudiantInterface {
 
     @Autowired
     CoursRepository coursRepository;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
 
     @Override
@@ -51,13 +54,40 @@ public class EtudiantService implements EtudiantInterface {
     }
 
     @Override
-    public Etudiant updateEtudiant(Long id, Etudiant etudiant) {
-        Etudiant etudiant1 = etudiantRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Etudiant avec l'ID " + id + " non trouvé"));
-        etudiant1.setNomEtudiant(etudiant.getNomEtudiant());
-        etudiant1.setMotPasseEtudiant(etudiant.getMotPasseEtudiant());
+    public Etudiant updateNom(Long id, String ancienMotDePasse, String nouveauNom) {
+        Etudiant etudiant = etudiantRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Étudiant avec ID " + id + " non trouvé."));
 
-        return etudiantRepository.save(etudiant1);
+        if (ancienMotDePasse == null || ancienMotDePasse.isBlank() ||
+                !passwordEncoder.matches(ancienMotDePasse, etudiant.getMotPasseEtudiant())) {
+            throw new IllegalArgumentException("Ancien mot de passe incorrect ou manquant.");
+        }
+
+        if (nouveauNom == null || nouveauNom.isBlank()) {
+            throw new IllegalArgumentException("Le nouveau nom ne peut pas être vide.");
+        }
+
+        etudiant.setNomEtudiant(nouveauNom);
+        return etudiantRepository.save(etudiant);
     }
+    @Override
+    public Etudiant updateMotDePasse(Long id, String ancienMotDePasse, String nouveauMotDePasse) {
+        Etudiant etudiant = etudiantRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Étudiant avec ID " + id + " non trouvé."));
+
+        if (ancienMotDePasse == null || ancienMotDePasse.isBlank() ||
+                !passwordEncoder.matches(ancienMotDePasse, etudiant.getMotPasseEtudiant())) {
+            throw new IllegalArgumentException("Ancien mot de passe incorrect ou manquant.");
+        }
+
+        if (nouveauMotDePasse == null || nouveauMotDePasse.isBlank()) {
+            throw new IllegalArgumentException("Le nouveau mot de passe ne peut pas être vide.");
+        }
+
+        etudiant.setMotPasseEtudiant(passwordEncoder.encode(nouveauMotDePasse));
+        return etudiantRepository.save(etudiant);
+    }
+
 
     @Override
     public String authenEtudiant(String emailEtudiant, String motPasseEtudiant) {

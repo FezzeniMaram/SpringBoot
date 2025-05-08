@@ -22,6 +22,16 @@ public class CoursSerializer extends JsonSerializer<Cours> {
         jsonGenerator.writeStringField("descriptionCours", cours.getDescriptionCours());
         jsonGenerator.writeStringField("imagePath",cours.getImagePath());
 
+
+
+        if (cours.getTuteur() != null) {
+            jsonGenerator.writeStringField("nomTuteur", cours.getTuteur().getNomTuteur());
+            jsonGenerator.writeNumberField("idTuteur", cours.getTuteur().getIdTuteur());
+            if (cours.getTuteur().getGender() != null) {
+                jsonGenerator.writeStringField("genderTuteur", cours.getTuteur().getGender().name());
+            }
+        }
+
         // Sérialisation des chapitres
         List<Chapitre> chapitres = cours.getChapitres();
         if (chapitres != null && !chapitres.isEmpty()) {
@@ -30,18 +40,13 @@ public class CoursSerializer extends JsonSerializer<Cours> {
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeNumberField("idchapitre", chapitre.getIdChapitre());
                 jsonGenerator.writeStringField("titreChapitre", chapitre.getTitreChapitre());
-                jsonGenerator.writeStringField("typeChapitre", chapitre.getTypeChapitre());
                 jsonGenerator.writeStringField("contenuChapitre", chapitre.getContenuChapitre());
+                jsonGenerator.writeStringField("videoPath", chapitre.getVideoPath());
+
 
 
                 // Sérialiser les vidéos associées au chapitre
-                if (chapitre.getVideo() != null) {
-                    jsonGenerator.writeObjectFieldStart("video");
-                    Video video = chapitre.getVideo();
-                    jsonGenerator.writeNumberField("id", video.getId());
-                    jsonGenerator.writeStringField("titre", video.getTitre());
-                    jsonGenerator.writeEndObject();
-                }
+
 
                 jsonGenerator.writeEndObject();
             }

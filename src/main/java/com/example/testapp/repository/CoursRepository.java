@@ -8,4 +8,7 @@ import java.util.List;
 
 public interface CoursRepository extends JpaRepository<Cours, Long> {
     List<Cours> findByTuteur(Tuteur tuteur);
+
+    int countByTuteurIdTuteur(Long idTuteur);
+
 }

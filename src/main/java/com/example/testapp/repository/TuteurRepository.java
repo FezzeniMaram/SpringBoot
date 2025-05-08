@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface TuteurRepository extends JpaRepository<Tuteur, Long> {
     Optional<Tuteur> findByEmailTuteur(String emailTuteur);
     boolean existsByEmailTuteur(String emailTuteur);
+
 }

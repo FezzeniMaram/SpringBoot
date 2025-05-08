@@ -105,6 +105,10 @@ public class Cours {
         this.imagePath = imagePath;
     }
 
+    public String getNomTuteur() {
+        return tuteur != null ? tuteur.getNomTuteur() : "Tuteur non assigné";
+    }
+
     @ManyToOne
     @JoinColumn(name = "tuteur_id")
     private Tuteur tuteur;

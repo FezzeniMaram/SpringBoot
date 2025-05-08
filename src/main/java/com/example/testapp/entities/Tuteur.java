@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -26,6 +27,14 @@ public class Tuteur {
     private Role role = Role.TUTEUR;
     @Column(nullable = false)
     private boolean active = false;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 10)
+    private Gender gender;
+    @Column(name = "date_naissance")
+    private LocalDate dateNaissanceTuteur;
+
+
+    public Tuteur() {}
 
 
     @Override
@@ -35,9 +44,14 @@ public class Tuteur {
                 ", nomTuteur='" + nomTuteur + '\'' +
                 ", emailTuteur='" + emailTuteur + '\'' +
                 ", motPasseTuteur='" + motPasseTuteur + '\'' +
+                ", role=" + role +
+                ", active=" + active +
+                ", gender=" + gender +
+                ", dateNaissanceTuteur=" + dateNaissanceTuteur +
                 ", coursPublies=" + coursPublies +
                 '}';
     }
+
     public Long getIdTuteur() {
         return idTuteur;
     }
@@ -94,6 +108,26 @@ public class Tuteur {
         this.active = active;
     }
 
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender= gender;
+    }
+
+    public LocalDate getDateNaissanceTuteur() {
+        return dateNaissanceTuteur;
+    }
+
+    public void setDateNaissanceTuteur(LocalDate dateNaissanceTuteur) {
+        this.dateNaissanceTuteur = dateNaissanceTuteur;
+    }
+
     @OneToMany(mappedBy = "tuteur", cascade = CascadeType.ALL)
     private List<Cours> coursPublies;
+
+    public Tuteur(Long id) {
+        this.idTuteur = id;
+    }
 }

@@ -10,7 +10,9 @@ public interface TuteurInterface {
     void deleteTuteur (Long id);
     public List<Tuteur> getAllTuteurs();
     public Tuteur getTuteurById(Long id);
-    public  Tuteur updateTuteur(Long id, Tuteur tuteur);
+    Tuteur updateNom(Long id, String ancienMotDePasse, String nouveauNom);
+    Tuteur updateMotDePasse(Long id, String ancienMotDePasse, String nouveauMotDePasse);
     public String authenTuteur(String emailTuteur, String motPasseTuteur);
     public Object getCoursPubliesByTuteur(Long tuteurId);
+    int getNombreCoursPublies(Long idTuteur);
 }

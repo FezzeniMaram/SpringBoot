@@ -8,7 +8,12 @@ import com.example.testapp.services.VideoInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -25,21 +30,31 @@ public class VideoController {
     // ✅ Ajouter une vidéo (TUTEUR uniquement)
     @PostMapping("/add")
     @PreAuthorize("hasAuthority('TUTEUR')")
-    public ApiResponse<Video> addVideo(@RequestBody Map<String, Object> requestData) {
+    public ApiResponse<Video> addVideo(
+            @RequestParam("titre") String titre,
+            @RequestParam("chapitre_id") Long chapitreId,
+            @RequestParam("videoPath") MultipartFile videoFile) {
         try {
-            Long chapitreId = requestData.get("chapitre_id") != null
-                    ? Long.valueOf(requestData.get("chapitre_id").toString()) : null;
-
+            // Récupérer le chapitre par son ID
             Chapitre chapitre = chapitreIntreface.getChapirteById(chapitreId);
 
-            Video video = new Video(null, requestData.get("titre").toString(), chapitre);
+            // Enregistrer la vidéo et obtenir son chemin
+            String videoPath = saveVideo(videoFile);
+
+            // Créer la vidéo avec son titre et le chapitre
+            Video video = new Video(null, titre, chapitre, videoPath);
+
+            // Sauvegarder la vidéo dans la base de données
             Video saved = videoInterface.addVideo(video);
 
             return new ApiResponse<>(true, "Vidéo ajoutée avec succès", saved);
+        } catch (IOException e) {
+            return new ApiResponse<>(false, "Erreur lors de l'upload de la vidéo : " + e.getMessage(), null);
         } catch (Exception e) {
             return new ApiResponse<>(false, "Erreur lors de l'ajout de la vidéo : " + e.getMessage(), null);
         }
     }
+
 
     // ✅ Supprimer une vidéo (TUTEUR ou ADMIN)
     @DeleteMapping("/delete/{id}")
@@ -89,4 +104,16 @@ public class VideoController {
             return new ApiResponse<>(false, "Vidéo introuvable", null);
         }
     }
+
+    private String saveVideo(MultipartFile file) throws IOException {
+        String uploadDir = "uploads/videos/";
+        Path path = Paths.get(uploadDir + file.getOriginalFilename());
+
+        Files.createDirectories(path.getParent());
+
+        file.transferTo(path);
+
+        return path.toString();
+    }
 }
+

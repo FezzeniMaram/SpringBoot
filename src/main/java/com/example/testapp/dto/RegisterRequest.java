@@ -1,12 +1,32 @@
 package com.example.testapp.dto;
 
 
+import com.example.testapp.entities.Gender;
+
+import java.time.LocalDate;
+
 public class RegisterRequest {
     private String nom;
     private String email;
     private String password;
-    // Tu peux aussi ajouter des champs spécifiques comme role, téléphone, etc.
+    private Gender gender;
+    private LocalDate dateNaissance;
 
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    public LocalDate getDateNaissance() {
+        return dateNaissance;
+    }
+
+    public void setDateNaissance(LocalDate dateNaissance) {
+        this.dateNaissance = dateNaissance;
+    }
 
     public String getNom() {
         return nom;

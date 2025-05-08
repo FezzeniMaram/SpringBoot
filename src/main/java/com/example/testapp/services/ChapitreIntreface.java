@@ -10,5 +10,7 @@ public interface ChapitreIntreface {
 
     public Chapitre updateChapitre(Long id, Chapitre chapitre);
     public Chapitre getChapirteById(Long id);
+    List<Chapitre> getChapitresByCoursId(Long coursId);
+
 
 }

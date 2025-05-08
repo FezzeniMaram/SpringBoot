@@ -17,6 +17,7 @@ public class TuteurSerializer extends JsonSerializer<Tuteur> {
         jsonGenerator.writeStartObject();
         jsonGenerator.writeStringField("nomTuteur", tuteur.getNomTuteur());
         jsonGenerator.writeStringField("emailTuteur", tuteur.getEmailTuteur());
+        jsonGenerator.writeStringField("role", tuteur.getRole().toString());
 
         // Sérialiser uniquement les IDs des cours publiés
         List<Long> coursIds = tuteur.getCoursPublies() != null
