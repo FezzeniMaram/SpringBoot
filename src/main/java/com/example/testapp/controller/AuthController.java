@@ -47,7 +47,7 @@ public class AuthController {
         String password = request.getPassword();
 
         if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
-            return new AuthResponse(false, "Email ou mot de passe manquant.", null, null, null, null, null, null);
+            return new AuthResponse(false, "Email ou mot de passe manquant.", null, null, null, null, null, null ,null);
         }
 
         try {
@@ -55,26 +55,26 @@ public class AuthController {
             if (etudiantOpt.isPresent()) {
                 Etudiant etu = etudiantOpt.get();
                 if (!etu.isActive()) {
-                    return new AuthResponse(false, "Votre compte étudiant n'est pas encore activé.", null, null, null, null, null, null);
+                    return new AuthResponse(false, "Votre compte étudiant n'est pas encore activé.", null, null, null, null, null, null,null);
                 }
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
                 String token = jwtUtil.generateToken(email, "ETUDIANT");
                 return new AuthResponse(true, "Connexion réussie", token, "ETUDIANT", etu.getNomEtudiant(), etu.getIdEtudiant(),
                         etu.getGender() != null ? etu.getGender().name() : null,
-                        etu.getDateNaissanceEtudiant());
+                        etu.getDateNaissanceEtudiant(), etu.getEmailEtudiant());
             }
 
             Optional<Tuteur> tuteurOpt = tuteurRepository.findByEmailTuteur(email);
             if (tuteurOpt.isPresent()) {
                 Tuteur tut = tuteurOpt.get();
                 if (!tut.isActive()) {
-                    return new AuthResponse(false, "Votre compte tuteur n'est pas encore activé.", null, null, null, null, null, null);
+                    return new AuthResponse(false, "Votre compte tuteur n'est pas encore activé.", null, null, null, null, null, null,null);
                 }
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
                 String token = jwtUtil.generateToken(email, "TUTEUR");
                 return new AuthResponse(true, "Connexion réussie", token, "TUTEUR", tut.getNomTuteur(), tut.getIdTuteur(),
                         tut.getGender() != null ? tut.getGender().name() : null,
-                        tut.getDateNaissanceTuteur());
+                        tut.getDateNaissanceTuteur(), tut.getEmailTuteur());
             }
 
             Optional<Admin> adminOpt = adminRepository.findByEmail(email);
@@ -82,15 +82,15 @@ public class AuthController {
                 Admin admin = adminOpt.get();
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
                 String token = jwtUtil.generateToken(email, "ADMIN");
-                return new AuthResponse(true, "Connexion réussie", token, "ADMIN", null, admin.getId(), null, null);
+                return new AuthResponse(true, "Connexion réussie", token, "ADMIN", null, admin.getId(), null, null,admin.getEmail());
             }
 
-            return new AuthResponse(false, "Aucun utilisateur trouvé avec cet email.", null, null, null, null, null, null);
+            return new AuthResponse(false, "Aucun utilisateur trouvé avec cet email.", null, null, null, null, null, null,null);
 
         } catch (BadCredentialsException e) {
-            return new AuthResponse(false, "Mot de passe incorrect.", null, null, null, null, null, null);
+            return new AuthResponse(false, "Mot de passe incorrect.", null, null, null, null, null, null,null);
         } catch (Exception e) {
-            return new AuthResponse(false, "Erreur interne : " + e.getMessage(), null, null, null, null, null, null);
+            return new AuthResponse(false, "Erreur interne : " + e.getMessage(), null, null, null, null, null, null,null);
         }
     }
 

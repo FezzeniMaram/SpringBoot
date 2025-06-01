@@ -44,12 +44,12 @@ public class AuthService implements AuthInterface {
     // ✅ LOGIN ÉTUDIANT
     public AuthResponse loginEtudiant(AuthRequest request) {
         if (isInvalid(request)) {
-            return new AuthResponse(false, "Email ou mot de passe manquant.", null, null, null, null,null,null);
+            return new AuthResponse(false, "Email ou mot de passe manquant.", null, null, null, null,null,null,null);
         }
 
         Optional<Etudiant> etu = etudiantRepository.findByEmailEtudiant(request.getEmail());
         if (etu.isEmpty()) {
-            return new AuthResponse(false, "Aucun étudiant trouvé avec cet email.", null, null, null, null,null,null);
+            return new AuthResponse(false, "Aucun étudiant trouvé avec cet email.", null, null, null, null,null,null,null);
         }
 
         try {
@@ -60,22 +60,22 @@ public class AuthService implements AuthInterface {
             Etudiant etudiant = etu.get();
             String token = jwtUtil.generateToken(request.getEmail(), "ETUDIANT");
             return new AuthResponse(true, "Connexion réussie", token, "ETUDIANT", etudiant.getNomEtudiant(), etudiant.getIdEtudiant(),
-                    etudiant.getGender().toString() , etudiant.getDateNaissanceEtudiant()  );
+                    etudiant.getGender().toString() , etudiant.getDateNaissanceEtudiant()  ,etudiant.getEmailEtudiant());
 
         } catch (BadCredentialsException e) {
-            return new AuthResponse(false, "Mot de passe incorrect.", null, null, null, null,null,null);
+            return new AuthResponse(false, "Mot de passe incorrect.", null, null, null, null,null,null,null);
         }
     }
 
     // ✅ LOGIN TUTEUR
     public AuthResponse loginTuteur(AuthRequest request) {
         if (isInvalid(request)) {
-            return new AuthResponse(false, "Email ou mot de passe manquant.", null, null, null, null,null,null);
+            return new AuthResponse(false, "Email ou mot de passe manquant.", null, null, null, null,null,null,null);
         }
 
         Optional<Tuteur> tut = tuteurRepository.findByEmailTuteur(request.getEmail());
         if (tut.isEmpty()) {
-            return new AuthResponse(false, "Aucun tuteur trouvé avec cet email.", null, null, null, null,null,null);
+            return new AuthResponse(false, "Aucun tuteur trouvé avec cet email.", null, null, null, null,null,null,null);
         }
 
         try {
@@ -86,22 +86,22 @@ public class AuthService implements AuthInterface {
             Tuteur tuteur = tut.get();
             String token = jwtUtil.generateToken(request.getEmail(), "TUTEUR");
             return new AuthResponse(true, "Connexion réussie", token, "TUTEUR", tuteur.getNomTuteur(), tuteur.getIdTuteur(),
-                    tuteur.getGender().toString(), tuteur.getDateNaissanceTuteur());
+                    tuteur.getGender().toString(), tuteur.getDateNaissanceTuteur(), tuteur.getEmailTuteur());
 
         } catch (BadCredentialsException e) {
-            return new AuthResponse(false, "Mot de passe incorrect.", null, null, null, null,null,null);
+            return new AuthResponse(false, "Mot de passe incorrect.", null, null, null, null,null,null,null);
         }
     }
 
     // ✅ LOGIN ADMIN
     public AuthResponse loginAdmin(AuthRequest request) {
         if (isInvalid(request)) {
-            return new AuthResponse(false, "Email ou mot de passe manquant.", null, null, null, null,null,null);
+            return new AuthResponse(false, "Email ou mot de passe manquant.", null, null, null, null,null,null,null);
         }
 
         Optional<Admin> admin = adminRepository.findByEmail(request.getEmail());
         if (admin.isEmpty()) {
-            return new AuthResponse(false, "Aucun admin trouvé avec cet email.", null, null, null, null,null,null);
+            return new AuthResponse(false, "Aucun admin trouvé avec cet email.", null, null, null, null,null,null,null);
         }
 
         try {
@@ -111,10 +111,10 @@ public class AuthService implements AuthInterface {
 
             Admin a = admin.get();
             String token = jwtUtil.generateToken(request.getEmail(), "ADMIN");
-            return new AuthResponse(true, "Connexion réussie", token, "ADMIN", null, a.getId(),null,null);
+            return new AuthResponse(true, "Connexion réussie", token, "ADMIN", null, a.getId(),null,null,null);
 
         } catch (BadCredentialsException e) {
-            return new AuthResponse(false, "Mot de passe incorrect.", null, null, null, null,null,null);
+            return new AuthResponse(false, "Mot de passe incorrect.", null, null, null, null,null,null,null);
         }
     }
 

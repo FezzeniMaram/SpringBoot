@@ -4,15 +4,16 @@ import com.example.testapp.entities.Etudiant;
 import com.example.testapp.entities.Tuteur;
 import com.example.testapp.repository.EtudiantRepository;
 import com.example.testapp.repository.TuteurRepository;
+import com.example.testapp.serviceimplement.AdminService;
+import com.example.testapp.services.AdminInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -23,6 +24,8 @@ public class adminController {
     EtudiantRepository etudiantRepository;
     @Autowired
     TuteurRepository tuteurRepository;
+    @Autowired
+    private AdminInterface adminService;
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/activer-etudiant/{id}")
@@ -53,5 +56,34 @@ public class adminController {
 
         return ResponseEntity.ok(Collections.singletonMap("message", "Compte tuteur activé avec succès."));
     }
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/etudiants-inactifs")
+    public ResponseEntity<?> getEtudiantsInactifs() {
+        List<Etudiant> liste = etudiantRepository.findByActiveFalse();
+        if (liste.isEmpty()) {
+            return ResponseEntity
+                    .ok(Collections.singletonMap("message", "Aucun étudiant inactif."));
+        }
+        // Sinon, on renvoie la liste des étudiants
+        return ResponseEntity.ok(liste);
+    }
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/tuteurs-inactifs")
+    public ResponseEntity<?> getTuteursInactifs() {
+        List<Tuteur> liste = tuteurRepository.findByActiveFalse();
+        if (liste.isEmpty()) {
+            // Aucun tuteur inactif → on renvoie un message
+            return ResponseEntity
+                    .ok(Collections.singletonMap("message", "Aucun tuteur inactif."));
+        }
+        // Sinon, on renvoie la liste des tuteurs
+        return ResponseEntity.ok(liste);
+    }
+    @PreAuthorize("hasAuthority('ADMIN')")
 
+    @GetMapping("/stats")
+    public ResponseEntity<Map<String, Long>> getDashboardStats() {
+        Map<String, Long> stats = adminService.getDashboardStats();
+        return ResponseEntity.ok(stats);
+    }
 }

@@ -22,12 +22,15 @@ public class AvisSerializer extends JsonSerializer<Avis> {
             jsonGenerator.writeStringField("typeAuteur", "ETUDIANT");
             jsonGenerator.writeStringField("emailAuteur", avis.getEtudiant().getEmailEtudiant());
         }
-
         // ✅ Auteur tuteur
         else if (avis.getTuteur() != null) {
             jsonGenerator.writeStringField("auteur", avis.getTuteur().getNomTuteur());
             jsonGenerator.writeStringField("typeAuteur", "TUTEUR");
             jsonGenerator.writeStringField("emailAuteur", avis.getTuteur().getEmailTuteur());
+        } else {
+            jsonGenerator.writeStringField("auteur", "Inconnu");
+            jsonGenerator.writeStringField("typeAuteur", "Inconnu");
+            jsonGenerator.writeStringField("emailAuteur", "N/A");
         }
 
         // ✅ Informations du cours
@@ -40,4 +43,6 @@ public class AvisSerializer extends JsonSerializer<Avis> {
 
         jsonGenerator.writeEndObject();
     }
+
+
 }

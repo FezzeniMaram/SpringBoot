@@ -13,8 +13,14 @@ public class EtudiantSerializer extends JsonSerializer<Etudiant> {
     @Override
     public void serialize(Etudiant etudiant, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         jsonGenerator.writeStartObject();
+        jsonGenerator.writeNumberField("id", etudiant.getIdEtudiant());
         jsonGenerator.writeStringField("nomEtudiant", etudiant.getNomEtudiant());
         jsonGenerator.writeStringField("emailEtudiant", etudiant.getEmailEtudiant());
+        jsonGenerator.writeStringField("gender", etudiant.getGender() != null ? etudiant.getGender().toString() : null);
+        jsonGenerator.writeStringField("dateNaissance", etudiant.getDateNaissanceEtudiant() != null ? etudiant.getDateNaissanceEtudiant().toString() : null);
+
+
+        jsonGenerator.writeStringField("role", etudiant.getRole().toString());
 
         List<Long> coursIds = etudiant.getCoursInscrits() != null
                 ? etudiant.getCoursInscrits().stream().map(Cours::getIdCour).collect(Collectors.toList())

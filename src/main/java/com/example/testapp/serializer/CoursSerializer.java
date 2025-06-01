@@ -27,6 +27,8 @@ public class CoursSerializer extends JsonSerializer<Cours> {
         if (cours.getTuteur() != null) {
             jsonGenerator.writeStringField("nomTuteur", cours.getTuteur().getNomTuteur());
             jsonGenerator.writeNumberField("idTuteur", cours.getTuteur().getIdTuteur());
+            jsonGenerator.writeStringField("email", cours.getTuteur().getEmailTuteur());
+
             if (cours.getTuteur().getGender() != null) {
                 jsonGenerator.writeStringField("genderTuteur", cours.getTuteur().getGender().name());
             }

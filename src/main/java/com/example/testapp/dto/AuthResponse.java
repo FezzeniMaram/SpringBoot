@@ -11,9 +11,10 @@ public class AuthResponse {
     private Long id;
     private String gender;
     private LocalDate dateNaissance;
+    private String email;
 
     public AuthResponse(boolean success, String message, String token, String role, String username, Long id,
-                        String gender, LocalDate dateNaissance) {
+                        String gender, LocalDate dateNaissance,  String email) {
         this.success = success;
         this.message = message;
         this.token = token;
@@ -22,6 +23,7 @@ public class AuthResponse {
         this.id = id;
         this.gender = gender;
         this.dateNaissance = dateNaissance;
+        this.email=email;
     }
 
     // Getters & Setters
@@ -48,4 +50,12 @@ public class AuthResponse {
 
     public LocalDate getDateNaissance() { return dateNaissance; }
     public void setDateNaissance(LocalDate dateNaissance) { this.dateNaissance = dateNaissance; }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }
