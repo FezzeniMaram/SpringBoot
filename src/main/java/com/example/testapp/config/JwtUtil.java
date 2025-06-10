@@ -29,7 +29,7 @@ public class JwtUtil {
 
     public boolean validateToken(String token) {
         try {
-            getClaims(token);  // Si le token est invalide, une exception sera levée ici
+            getClaims(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;
@@ -37,7 +37,7 @@ public class JwtUtil {
     }
 
     private Claims getClaims(String token) {
-        return Jwts.parserBuilder()  // Utilisation de parserBuilder() pour Spring Security 6+
+        return Jwts.parserBuilder()
                 .setSigningKey(SECRET)
                 .build()
                 .parseClaimsJws(token)

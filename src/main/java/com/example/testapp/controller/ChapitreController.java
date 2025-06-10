@@ -26,7 +26,6 @@ public class ChapitreController {
     @Autowired
     private CoursInterface coursInterface;
 
-    // ✅ Ajouter un chapitre (avec vidéo) → TUTEUR
     @PostMapping("/add")
     @PreAuthorize("hasAuthority('TUTEUR')")
     public ApiResponse<Chapitre> addChapitre(
@@ -53,29 +52,26 @@ public class ChapitreController {
     private String saveVideo(MultipartFile file) throws IOException {
         String uploadDir = "uploads/videos/";
 
-        // Générer un ID unique
+
         String uniqueId = IdGenerator.generateId();
 
-        // Extraire extension (.mp4, .jpg, etc)
         String extension = "";
         String originalName = file.getOriginalFilename();
         if (originalName != null && originalName.contains(".")) {
             extension = originalName.substring(originalName.lastIndexOf('.'));
         }
 
-        // Construire le nom du fichier avec l'ID
         String fileName = uniqueId + extension;
 
         Path path = Paths.get(uploadDir, fileName);
         Files.createDirectories(path.getParent());
         file.transferTo(path);
 
-        return fileName; // ✅ Retourner juste l'ObjectId+extension
+        return fileName;
     }
 
 
 
-    // ✅ Supprimer un chapitre
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyAuthority('TUTEUR', 'ADMIN')")
     public ApiResponse<Void> deleteChapitre(@PathVariable Long id) {
@@ -87,7 +83,6 @@ public class ChapitreController {
         }
     }
 
-    // ✅ Modifier un chapitre (titre + contenu)
     @PatchMapping("/update/{id}")
     @PreAuthorize("hasAnyAuthority('TUTEUR', 'ADMIN')")
     public ApiResponse<Chapitre> updateChapitre(@PathVariable Long id, @RequestBody Chapitre chapitre) {
@@ -99,7 +94,6 @@ public class ChapitreController {
         }
     }
 
-    // ✅ Lister tous les chapitres
     @GetMapping("/getAll")
     @PreAuthorize("hasAnyAuthority('ETUDIANT', 'TUTEUR', 'ADMIN')")
     public ApiResponse<List<Chapitre>> getAllChapitre() {
@@ -110,7 +104,6 @@ public class ChapitreController {
         }
     }
 
-    // ✅ Récupérer chapitre par ID
     @GetMapping("/getById/{id}")
     @PreAuthorize("hasAnyAuthority('ETUDIANT', 'TUTEUR', 'ADMIN')")
     public ApiResponse<Chapitre> getById(@PathVariable Long id) {
@@ -120,7 +113,6 @@ public class ChapitreController {
                 : new ApiResponse<>(false, "Chapitre introuvable", null);
     }
 
-    // ✅ Récupérer tous les chapitres d’un cours
     @GetMapping("/getChapitresByCours/{coursId}")
     @PreAuthorize("hasAnyAuthority('TUTEUR', 'ETUDIANT', 'ADMIN')")
     public ApiResponse<List<Chapitre>> getByCours(@PathVariable Long coursId) {

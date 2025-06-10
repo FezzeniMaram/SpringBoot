@@ -9,7 +9,7 @@ public class Admin {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String email; // ✅ Standardisé
+    private String email;
     private String password;
 
     @Enumerated(EnumType.STRING)

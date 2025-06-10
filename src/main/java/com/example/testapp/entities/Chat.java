@@ -21,7 +21,7 @@ public class Chat {
     private LocalDateTime dateChat;
 
     @Column(nullable = false)
-    private String expediteurRole; // "ETUDIANT" ou "TUTEUR"
+    private String expediteurRole;
 
     @Column(nullable = false)
     private boolean visibleParEtudiant = true;

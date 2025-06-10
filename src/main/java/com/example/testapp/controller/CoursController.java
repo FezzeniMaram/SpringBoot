@@ -57,7 +57,6 @@ public class CoursController {
         }
     }
 
-    // ✅ Modifier un cours → TUTEUR ou ADMIN
     @PatchMapping("/update/{id}")
     @PreAuthorize("hasAnyAuthority('TUTEUR', 'ADMIN')")
     public ApiResponse<Cours> updateCours(
@@ -75,9 +74,7 @@ public class CoursController {
             existingCours.setTitreCours(titreCours);
             existingCours.setDescriptionCours(descriptionCours);
 
-            // Remplacer l'image si une nouvelle est fournie
             if (imageFile != null && !imageFile.isEmpty()) {
-                // Supprimer l'ancienne image
                 String oldImagePath = existingCours.getImagePath();
                 if (oldImagePath != null) {
                     Path oldPath = Paths.get(UPLOAD_DIR).resolve(oldImagePath);
@@ -86,7 +83,6 @@ public class CoursController {
                     }
                 }
 
-                // Enregistrer la nouvelle
                 String newImagePath = saveImage(imageFile);
                 existingCours.setImagePath(newImagePath);
             }
@@ -101,7 +97,6 @@ public class CoursController {
         }
     }
 
-    // ✅ Supprimer un cours
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyAuthority('TUTEUR', 'ADMIN')")
     public ApiResponse<Void> deleteCours(@PathVariable Long id) {
@@ -111,19 +106,17 @@ public class CoursController {
                 return new ApiResponse<>(false, "Cours introuvable", null);
             }
 
-            // ✅ Supprimer le fichier image du dossier uploads/images
             String imagePath = cours.getImagePath(); // ex: images/xxx.jpg
             if (imagePath != null && !imagePath.isEmpty()) {
                 Path imageFile = Paths.get(System.getProperty("user.dir"))
                         .resolve("uploads")
-                        .resolve(imagePath); // imagePath est déjà "images/xxx.jpg"
+                        .resolve(imagePath);
 
                 if (Files.exists(imageFile)) {
                     Files.delete(imageFile);
                 }
             }
 
-            // ✅ Supprimer le cours en base
             coursInterface.deleteCours(id);
 
             return new ApiResponse<>(true, "Cours supprimé avec succès", null);
@@ -136,7 +129,6 @@ public class CoursController {
     }
 
 
-    // ✅ Lister tous les cours
     @GetMapping("/getAllCours")
     public ApiResponse<List<Cours>> getAllCours() {
         try {
@@ -146,7 +138,6 @@ public class CoursController {
         }
     }
 
-    // ✅ Récupérer un cours par ID
     @GetMapping("/getById/{id}")
     @PreAuthorize("hasAnyAuthority('ETUDIANT', 'TUTEUR', 'ADMIN')")
     public ApiResponse<Cours> getById(@PathVariable Long id) {
@@ -156,7 +147,6 @@ public class CoursController {
                 : new ApiResponse<>(false, "Cours introuvable", null);
     }
 
-    // ✅ Obtenir les cours d'un tuteur
     @GetMapping("/tuteur/{tuteurId}")
     @PreAuthorize("hasAnyAuthority('TUTEUR', 'ADMIN')")
     public ApiResponse<List<Cours>> getCoursByTuteur(@PathVariable Long tuteurId) {
@@ -168,7 +158,6 @@ public class CoursController {
         }
     }
 
-    // ✅ Méthode utilitaire d'enregistrement d'image
     private String saveImage(MultipartFile file) throws IOException {
         String baseDir = System.getProperty("user.dir");
         String uploadDir = "uploads/images";

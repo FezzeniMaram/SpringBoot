@@ -27,7 +27,6 @@ public class VideoController {
     @Autowired
     private ChapitreIntreface chapitreIntreface;
 
-    // ✅ Ajouter une vidéo (TUTEUR uniquement)
     @PostMapping("/add")
     @PreAuthorize("hasAuthority('TUTEUR')")
     public ApiResponse<Video> addVideo(
@@ -35,16 +34,12 @@ public class VideoController {
             @RequestParam("chapitre_id") Long chapitreId,
             @RequestParam("videoPath") MultipartFile videoFile) {
         try {
-            // Récupérer le chapitre par son ID
             Chapitre chapitre = chapitreIntreface.getChapirteById(chapitreId);
 
-            // Enregistrer la vidéo et obtenir son chemin
             String videoPath = saveVideo(videoFile);
 
-            // Créer la vidéo avec son titre et le chapitre
             Video video = new Video(null, titre, chapitre, videoPath);
 
-            // Sauvegarder la vidéo dans la base de données
             Video saved = videoInterface.addVideo(video);
 
             return new ApiResponse<>(true, "Vidéo ajoutée avec succès", saved);
@@ -56,7 +51,6 @@ public class VideoController {
     }
 
 
-    // ✅ Supprimer une vidéo (TUTEUR ou ADMIN)
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyAuthority('TUTEUR', 'ADMIN')")
     public ApiResponse<Void> deleteVideo(@PathVariable Long id) {
@@ -68,7 +62,6 @@ public class VideoController {
         }
     }
 
-    // ✅ Modifier une vidéo (TUTEUR ou ADMIN)
     @PatchMapping("/update/{id}")
     @PreAuthorize("hasAnyAuthority('TUTEUR', 'ADMIN')")
     public ApiResponse<Video> updateVideo(@PathVariable Long id, @RequestBody Video video) {
@@ -80,7 +73,6 @@ public class VideoController {
         }
     }
 
-    // ✅ Récupérer toutes les vidéos (ouvert à tous)
     @GetMapping("/getAllVideo")
 
     @PreAuthorize("hasAnyAuthority('ETUDIANT', 'TUTEUR', 'ADMIN')")
@@ -93,7 +85,6 @@ public class VideoController {
         }
     }
 
-    // ✅ Récupérer une vidéo par ID (ouvert à tous)
     @GetMapping("/getById/{id}")
     @PreAuthorize("hasAnyAuthority('ETUDIANT', 'TUTEUR', 'ADMIN')")
     public ApiResponse<Video> getById(@PathVariable Long id) {

@@ -20,7 +20,6 @@ public class TuteurController {
     @Autowired
     TuteurInterface tuteurInterface;
 
-    // ✅ Inscription : accessible à tous
     @PostMapping("/inscrire")
     public ResponseEntity<Map<String, Object>> inscrireTuteur(@RequestBody Tuteur tuteur) {
         String message = tuteurInterface.inscrireTuteur(tuteur);
@@ -31,7 +30,6 @@ public class TuteurController {
         ));
     }
 
-    // ❌ À sécuriser plus tard si nécessaire
     @PostMapping("/authentification")
     public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> requestBody) {
         String emailTuteur = requestBody.get("emailTuteur");
@@ -46,7 +44,6 @@ public class TuteurController {
         ));
     }
 
-    // ✅ Suppression de tuteur : réservé à l'ADMIN
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Map<String, Object>> deleteTuteur(@PathVariable Long id) {
@@ -57,7 +54,6 @@ public class TuteurController {
         ));
     }
 
-    // ✅ Mise à jour du tuteur : accessible uniquement au TUTEUR
     @PreAuthorize("hasAuthority('TUTEUR')")
     @PutMapping("/updateNom/{id}")
     public ResponseEntity<Map<String, Object>> updateNom(
@@ -89,7 +85,6 @@ public class TuteurController {
         }
     }
 
-    // ✅ Modifier seulement le MOT DE PASSE
     @PreAuthorize("hasAuthority('TUTEUR')")
     @PutMapping("/updateMotDePasse/{id}")
     public ResponseEntity<Map<String, Object>> updateMotDePasse(
@@ -121,7 +116,6 @@ public class TuteurController {
         }
     }
 
-    // ✅ Voir tous les tuteurs : réservé à l'ADMIN
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/findAll")
     public ResponseEntity<Map<String, Object>> getAllTuteurs() {
@@ -132,7 +126,6 @@ public class TuteurController {
         ));
     }
 
-    // ✅ Récupérer un tuteur : TUTEUR ou ADMIN
     @PreAuthorize("hasAuthority('TUTEUR') or hasAuthority('ADMIN')")
     @GetMapping("/getById/{id}")
     public ResponseEntity<Map<String, Object>> getTuteurById(@PathVariable Long id) {
@@ -160,7 +153,6 @@ public class TuteurController {
     }
 
 
-    // ✅ Voir les cours publiés d’un tuteur : TUTEUR ou ADMIN
     @PreAuthorize("hasAnyAuthority('ADMIN', 'ETUDIANT', 'TUTEUR')")
     @GetMapping("/coursPublier/{idTuteur}")
     public ResponseEntity<Map<String, Object>> getCoursPublies(@PathVariable Long idTuteur) {
@@ -173,7 +165,6 @@ public class TuteurController {
         ));
     }
 
-    // ✅ Test TUTEUR token
     @GetMapping("/nombreCours/{idTuteur}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'ETUDIANT', 'TUTEUR')")
     public ResponseEntity<Integer> getNombreCours(@PathVariable Long idTuteur) {

@@ -41,7 +41,6 @@ public class AuthService implements AuthInterface {
     @Autowired
     private AdminRepository adminRepository;
 
-    // ✅ LOGIN ÉTUDIANT
     public AuthResponse loginEtudiant(AuthRequest request) {
         if (isInvalid(request)) {
             return new AuthResponse(false, "Email ou mot de passe manquant.", null, null, null, null,null,null,null);
@@ -67,7 +66,6 @@ public class AuthService implements AuthInterface {
         }
     }
 
-    // ✅ LOGIN TUTEUR
     public AuthResponse loginTuteur(AuthRequest request) {
         if (isInvalid(request)) {
             return new AuthResponse(false, "Email ou mot de passe manquant.", null, null, null, null,null,null,null);
@@ -93,7 +91,6 @@ public class AuthService implements AuthInterface {
         }
     }
 
-    // ✅ LOGIN ADMIN
     public AuthResponse loginAdmin(AuthRequest request) {
         if (isInvalid(request)) {
             return new AuthResponse(false, "Email ou mot de passe manquant.", null, null, null, null,null,null,null);
@@ -118,7 +115,6 @@ public class AuthService implements AuthInterface {
         }
     }
 
-    // ✅ REGISTER ÉTUDIANT
     @Override
     public RegisterResponse registerEtudiant(RegisterRequest request) {
         if (isInvalid(request)) {
@@ -138,7 +134,6 @@ public class AuthService implements AuthInterface {
         return new RegisterResponse(true, "Étudiant enregistré avec succès.");
     }
 
-    // ✅ REGISTER TUTEUR
     @Override
     public RegisterResponse registerTuteur(RegisterRequest request) {
         if (isInvalid(request)) {
@@ -158,7 +153,6 @@ public class AuthService implements AuthInterface {
         return new RegisterResponse(true, "Tuteur enregistré avec succès.");
     }
 
-    // ✅ REGISTER ADMIN
     @Override
     public String registreAdmin(RegisterRequest request) {
         if (isInvalid(request)) {
@@ -177,7 +171,6 @@ public class AuthService implements AuthInterface {
         return "Admin enregistré avec succès.";
     }
 
-    // ✅ Méthode utilitaire pour validation
     private boolean isInvalid(AuthRequest request) {
         return request.getEmail() == null || request.getEmail().isEmpty() ||
                 request.getPassword() == null || request.getPassword().isEmpty();

@@ -46,24 +46,21 @@ public class ConversationService implements ConversationInterface {
         } else if ("TUTEUR".equalsIgnoreCase(role)) {
             conversations = conversationRepository.findByTuteur_IdTuteur(userId);
         } else {
-            return List.of(); // rôle non valide
+            return List.of();
         }
 
-        // Appliquer les filtres
         return conversations.stream()
                 .filter(conv -> {
-                    // Cacher les conversations masquées
                     if ("ETUDIANT".equalsIgnoreCase(role) && !conv.isVisibleParEtudiant()) return false;
                     if ("TUTEUR".equalsIgnoreCase(role) && !conv.isVisibleParTuteur()) return false;
 
-                    // Cacher les conversations si l'utilisateur est bloqué
+
                     if ("ETUDIANT".equalsIgnoreCase(role) && conv.isTuteurBloqueEtudiant()) return false;
                     if ("TUTEUR".equalsIgnoreCase(role) && conv.isEtudiantBloqueTuteur()) return false;
 
                     return true;
                 })
                 .peek(conv -> {
-                    // Charger le dernier message visible
                     var messages = conv.getMessages();
                     if (messages != null && !messages.isEmpty()) {
                         String last = messages.stream()
@@ -150,7 +147,6 @@ public class ConversationService implements ConversationInterface {
         Conversation conv = conversationRepository.findById(conversationId)
                 .orElseThrow(() -> new RuntimeException("Conversation introuvable"));
 
-        // Si l'un des deux a bloqué, la conversation est bloquée pour les deux
         return conv.isEtudiantBloqueTuteur() || conv.isTuteurBloqueEtudiant();
     }
 

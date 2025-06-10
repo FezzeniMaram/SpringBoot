@@ -97,7 +97,6 @@ public class AuthController {
 
 
 
-    // ✅ Pour créer un compte étudiant (exemple)
     @PostMapping("/register/etudiant")
     public RegisterResponse registerEtudiant(@RequestBody Etudiant etudiant) {
         if (etudiant.getEmailEtudiant() == null || etudiant.getMotPasseEtudiant() == null ||
@@ -122,7 +121,6 @@ public class AuthController {
 
 
 
-    // ✅ Pour créer un compte tuteur (exemple)
     @PostMapping("/register/tuteur")
     public RegisterResponse registerTuteur(@RequestBody Tuteur tuteur) {
         if (tuteur.getEmailTuteur() == null || tuteur.getMotPasseTuteur() == null ||
@@ -136,7 +134,7 @@ public class AuthController {
 
         tuteur.setMotPasseTuteur(passwordEncoder.encode(tuteur.getMotPasseTuteur()));
         tuteur.setRole(Role.TUTEUR);
-        tuteur.setActive(false); // compte inactif à la création
+        tuteur.setActive(false);
         tuteurRepository.save(tuteur);
 
         return new RegisterResponse(

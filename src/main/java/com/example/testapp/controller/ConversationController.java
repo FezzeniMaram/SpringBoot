@@ -48,7 +48,6 @@ public class ConversationController {
 
 
 
-    // ✅ Nouvelle méthode pour récupérer une conversation par ID
     @GetMapping("/{conversationId}")
     @PreAuthorize("hasAnyAuthority('ETUDIANT', 'TUTEUR')")
     public ResponseEntity<Conversation> getConversationById(@PathVariable Long conversationId) {
@@ -86,7 +85,7 @@ public class ConversationController {
         response.put("success", true);
         response.put("message", "✅ Utilisateur débloqué avec succès.");
 
-        return ResponseEntity.ok(response); // ✅ ça fonctionne maintenant
+        return ResponseEntity.ok(response);
     }
 
 

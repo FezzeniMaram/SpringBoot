@@ -21,20 +21,17 @@ public class EtudiantController {
     @Autowired
     EtudiantInterface etudiantInterface;
 
-    // ✅ Accessible par tout le monde (inscription)
     @PostMapping("/inscrire")
     public ResponseEntity<Map<String, String>> inscrireEtudiant(@RequestBody Etudiant etudiant) {
         return etudiantInterface.inscrireEtudiant(etudiant);
     }
 
-    // ✅ Supprimer un étudiant — accessible uniquement à ADMIN
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/delete/{id}")
     public void deleteEtudiant(@PathVariable Long id) {
         etudiantInterface.deleteEtudiant(id);
     }
 
-    // ✅ Mise à jour du profil — accessible uniquement à l'ETUDIANT
     @PreAuthorize("hasAuthority('ETUDIANT')")
     @PutMapping("/updateNom/{id}")
     public ResponseEntity<Map<String, Object>> updateNom(
@@ -66,7 +63,6 @@ public class EtudiantController {
         }
     }
 
-    // ✅ Modifier seulement le MOT DE PASSE
     @PreAuthorize("hasAuthority('ETUDIANT')")
     @PutMapping("/updateMotDePasse/{id}")
     public ResponseEntity<Map<String, Object>> updateMotDePasse(
@@ -98,7 +94,7 @@ public class EtudiantController {
         }
     }
 
-    // ✅ Liste des étudiants — accessible uniquement à ADMIN
+
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/getAll")
     public List<Etudiant> getAllEtudiants() {
@@ -132,7 +128,6 @@ public class EtudiantController {
     }
 
 
-    // ❌ À sécuriser si utilisé (ou à retirer si remplacé par /auth/login)
     @PostMapping("/authentification")
     public ResponseEntity<String> login(@RequestBody Map<String, String> requestBody) {
         String emailEtudiant = requestBody.get("emailEtudiant");
@@ -142,7 +137,6 @@ public class EtudiantController {
         return ResponseEntity.ok(response);
     }
 
-    // ✅ Inscription à un cours — accessible à l'étudiant
     @PreAuthorize("hasAuthority('ETUDIANT')")
     @PostMapping("/{etudiantId}/inscrire/{coursId}")
     public ResponseEntity<Map<String, Object>> inscrireEtudiantAuCours(@PathVariable Long etudiantId, @PathVariable Long coursId) {
@@ -157,7 +151,6 @@ public class EtudiantController {
     }
 
 
-    // ✅ Liste des cours inscrits — accessible à l'étudiant
     @PreAuthorize("hasAuthority('ETUDIANT')")
     @GetMapping("/getcours/{etudiantId}")
     public ResponseEntity<List<Cours>> getCoursByEtudiant(@PathVariable Long etudiantId) {
@@ -165,7 +158,6 @@ public class EtudiantController {
         return ResponseEntity.ok(coursList);
     }
 
-    // ✅ Test token (facultatif)
     @PreAuthorize("hasAuthority('ETUDIANT')")
     @GetMapping("/test")
     public String testToken() {

@@ -64,7 +64,6 @@ public class adminController {
             return ResponseEntity
                     .ok(Collections.singletonMap("message", "Aucun étudiant inactif."));
         }
-        // Sinon, on renvoie la liste des étudiants
         return ResponseEntity.ok(liste);
     }
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -72,11 +71,9 @@ public class adminController {
     public ResponseEntity<?> getTuteursInactifs() {
         List<Tuteur> liste = tuteurRepository.findByActiveFalse();
         if (liste.isEmpty()) {
-            // Aucun tuteur inactif → on renvoie un message
             return ResponseEntity
                     .ok(Collections.singletonMap("message", "Aucun tuteur inactif."));
         }
-        // Sinon, on renvoie la liste des tuteurs
         return ResponseEntity.ok(liste);
     }
     @PreAuthorize("hasAuthority('ADMIN')")

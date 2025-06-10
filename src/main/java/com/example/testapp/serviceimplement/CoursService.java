@@ -22,17 +22,15 @@ public class CoursService implements CoursInterface {
     @Autowired
     private TuteurRepository tuteurRepository;
 
-    // ✅ Ajouter un cours - TUTEUR uniquement
     @Override
     public Cours addCours(Cours cours) {
         String email = getCurrentEmail();
         Tuteur tuteur = tuteurRepository.findByEmailTuteur(email)
                 .orElseThrow(() -> new RuntimeException("Tuteur non trouvé"));
-        cours.setTuteur(tuteur); // associer le cours au tuteur connecté
+        cours.setTuteur(tuteur);
         return coursRepository.save(cours);
     }
 
-    // ✅ Supprimer un cours - ADMIN ou TUTEUR propriétaire
     @Override
     public void deleteCours(Long id) {
         Cours cours = coursRepository.findById(id)
@@ -49,7 +47,6 @@ public class CoursService implements CoursInterface {
         coursRepository.deleteById(id);
     }
 
-    // ✅ Modifier un cours - ADMIN ou TUTEUR propriétaire
     @Override
     public Cours updateCours(Long id, Cours updated) {
         Cours cours = coursRepository.findById(id)
@@ -69,19 +66,16 @@ public class CoursService implements CoursInterface {
         return coursRepository.save(cours);
     }
 
-    // ✅ Accessible à tous les rôles
     @Override
     public List<Cours> getAllCours() {
         return coursRepository.findAll();
     }
 
-    // ✅ Récupérer un cours par ID
     @Override
     public Cours getById(Long id) {
         return coursRepository.findById(id).orElse(null);
     }
 
-    // ✅ Liste des cours du tuteur connecté
     @Override
     public List<Cours> getCoursByTuteur(Long tuteurId) {
         Tuteur tuteur = tuteurRepository.findById(tuteurId)
@@ -96,7 +90,6 @@ public class CoursService implements CoursInterface {
 
 
 
-    // 🔐 Outils utilitaires de sécurité
     private String getCurrentEmail() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }

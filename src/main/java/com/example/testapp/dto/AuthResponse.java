@@ -26,7 +26,6 @@ public class AuthResponse {
         this.email=email;
     }
 
-    // Getters & Setters
     public boolean isSuccess() { return success; }
     public void setSuccess(boolean success) { this.success = success; }
 
